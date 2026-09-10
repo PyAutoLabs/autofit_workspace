@@ -2,699 +2,427 @@
 Overview: Scientific Workflow
 =============================
 
-A scientific workflow comprises the tasks you perform to conduct a scientific study. This includes fitting models to
-datasets, interpreting the results, and gaining insights into your scientific problem.
+A scientific workflow connects fitting a model to interpreting, comparing and revisiting its results. Start with one
+completed fit, then build a study in which many datasets, models and searches remain easy to inspect.
 
-Different problems require different scientific workflows, depending on factors such as model complexity, dataset size,
-and computational run times. For example, some problems involve fitting a single dataset with many models to gain
-scientific insights, while others involve fitting thousands of datasets with a single model for large-scale studies.
+This Python overview implements the workflow. The
+[Read the Docs guide](https://pyautofit.readthedocs.io/en/latest/overview/scientific_workflow.html)
+describes the same tasks using natural language prompts for an assistant.
 
-The **PyAutoFit** API is flexible, customizable, and extensible, enabling users to develop scientific workflows
-tailored to their specific problems.
-
-This overview covers the key features of **PyAutoFit** that support the development of effective scientific workflows:
-
-- **On The Fly**: Display results immediately (e.g., in Jupyter notebooks) to provide instant feedback for adapting your workflow.
-- **Hard Disk Output**: Output results to hard disk with high customization, allowing quick and detailed inspection of fits to many datasets.
-- **Visualization**: Generate model-specific visualizations to create custom plots that streamline result inspection.
-- **Loading Results**: Load results from the hard disk to inspect and interpret the outcomes of a model fit.
-- **Result Customization**: Customize the returned results to simplify scientific interpretation.
-- **Model Composition**: Extensible model composition makes it easy to fit many models with different parameterizations and assumptions.
-- **Searches**: Support for various non-linear searches (e.g., nested sampling, MCMC), including gradient based fitting using JAX, to find the right method for your problem.
-- **Configs**: Configuration files that set default model, fitting, and visualization behaviors, streamlining model fitting.
-- **Database**: Store results in a relational SQLite3 database, enabling efficient management of large modeling results.
-- **Scaling Up**: Guidance on scaling up your scientific workflow from small to large datasets.
-
-__Contents__
-
-This overview is split into the following sections:
-
-- **Data**: Load the 1D Gaussian data from disk to illustrate the scientific workflow.
-- **On The Fly**: Display intermediate results during model fitting for instant feedback.
-- **Hard Disk Output**: Enable persistent saving of search results with customizable output structure.
-- **Visualization**: Generate model-specific visualizations saved to disk during fitting.
-- **Loading Results**: Use the Aggregator API to load and inspect results from hard disk.
-- **Result Customization**: Extend the Result class with custom properties specific to the model-fitting problem.
-- **Model Composition**: Construct diverse models with parameter assignments and complex hierarchies.
-- **Searches**: Select and customize non-linear search methods appropriate for the problem.
-- **Configs**: Use configuration files to define default model priors and search settings.
-- **Database**: Store and query results in a SQLite3 relational database.
-- **Scaling Up**: Guidance on expanding workflows from small to large datasets.
-- **Wrap Up**: Summary of scientific workflow features in PyAutoFit.
+We cover hard disk output, visualization, on-the-fly output, loading results, result customization, model composition,
+searches, configs, the database and scaling up. Only one short Gaussian fit runs in this overview.
 """
 
 # from autofit import setup_notebook; setup_notebook()
 
-import numpy as np
-from typing import Optional
+import json
 from os import path
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 import autofit as af
 
 """
 __Data__
 
-To illustrate a few aspects of the scientific workflow, we'll fit a 1D Gaussian profile to data, which
-we load from hard-disk.
+Load the Gaussian dataset used in the first overview. If necessary, create the example datasets first.
 """
 dataset_path = path.join("dataset", "example_1d", "gaussian_x1")
-
-"""
-__Dataset Auto-Simulation__
-
-If the dataset does not already exist on your system, it will be created by running the corresponding
-simulator script. This ensures that all example scripts can be run without manually simulating data first.
-"""
 if not path.exists(dataset_path):
     import subprocess
     import sys
 
-    subprocess.run(
-        [sys.executable, "scripts/simulators/simulators.py"],
-        check=True,
-    )
+    subprocess.run([sys.executable, "scripts/simulators/simulators.py"], check=True)
 
 data = af.util.numpy_array_from_json(file_path=path.join(dataset_path, "data.json"))
 noise_map = af.util.numpy_array_from_json(
     file_path=path.join(dataset_path, "noise_map.json")
 )
 
-
 """
-__On The Fly__
-
-The on-the-fly feature described below is not implemented yet, we are working on it currently.
-The best way to get on-the-fly output is to output to hard-disk, which is described in the next section.
-This feature is fully implemented and provides on-the-fly output of results to hard-disk.
-
-When a model fit is running, information about the fit is displayed at user-specified intervals.
-
-The frequency of this on-the-fly output is controlled by a search's `iterations_per_full_update` parameter, which
-specifies how often this information is output. The example code below outputs on-the-fly information every 1000 
-iterations:
-"""
-search = af.DynestyStatic(iterations_per_full_update=1000)
-
-"""
-In a Jupyter notebook, the default behavior is for this information to appear in the cell being run and to include:
-
-- Text displaying the maximum likelihood model inferred so far and related information.
-- A visual showing how the search has sampled parameter space so far, providing intuition on how the search is 
-performing.
-
-Here is an image of how this looks:
-
-![Example On-the-Fly Output](path/to/image.png)
-
-The most valuable on-the-fly output is often specific to the model and dataset you are fitting. For instance, it
-might be a ``matplotlib`` subplot showing the maximum likelihood model's fit to the dataset, complete with residuals
-and other diagnostic information.
-
-The on-the-fly output can be fully customized by extending the ``on_the_fly_output`` method of the ``Analysis``
-class being used to fit the model.
-
-The example below shows how this is done for the simple case of fitting a 1D Gaussian profile:
-"""
-
-
-class Analysis(af.Analysis):
-    def __init__(self, data: np.ndarray, noise_map: np.ndarray):
-        """
-        Example Analysis class illustrating how to customize the on-the-fly output of a model-fit.
-        """
-        super().__init__()
-
-        self.data = data
-        self.noise_map = noise_map
-
-    def on_the_fly_output(self, instance):
-        """
-        During a model-fit, the `on_the_fly_output` method is called throughout the non-linear search.
-
-        The `instance` passed into the method is maximum log likelihood solution obtained by the model-fit so far and it can be
-        used to provide on-the-fly output showing how the model-fit is going.
-        """
-        xvalues = np.arange(self.data.shape[0])
-
-        model_data = instance.model_data_from(xvalues=xvalues)
-
-        """
-        The visualizer now outputs images of the best-fit results to hard-disk (checkout `visualizer.py`).
-        """
-        import matplotlib.pyplot as plt
-
-        plt.errorbar(
-            x=xvalues,
-            y=self.data,
-            yerr=self.noise_map,
-            linestyle="",
-            color="k",
-            ecolor="k",
-            elinewidth=1,
-            capsize=2,
-        )
-        plt.plot(xvalues, model_data, color="r")
-        plt.title("Maximum Likelihood Fit")
-        plt.xlabel("x value of profile")
-        plt.ylabel("Profile Normalization")
-        plt.show()  # By using `plt.show()` the plot will be displayed in the Jupyter notebook.
-
-
-"""
-Here's how the visuals appear in a Jupyter Notebook:
-
-![Example On-the-Fly Output](path/to/image.png)
-
-In the early stages of setting up a scientific workflow, on-the-fly output is invaluable. It provides immediate
-feedback on how your model fitting is performing, which is often crucial at the beginning of a project when things
-might not be going well. It also encourages you to prioritize visualizing your fit and diagnosing whether the process
-is working correctly.
-
-We highly recommend users starting a new model-fitting problem begin by setting up on-the-fly output!
-
 __Hard Disk Output__
 
-By default, a non-linear search does not save its results to the hard disk; the results can only be inspected in 
-a Jupyter Notebook or Python script via the returned `result`.
+Saving results makes inference part of a scientific workflow: each fit retains its assumptions, parameter estimates,
+diagnostics and scientific interpretation. You can inspect multiple datasets, resume supported searches after an
+interruption, and revisit results without rerunning inference, including runs performed on a remote computer.
 
-However, you can enable the output of non-linear search results to the hard disk by specifying 
-the `name` and/or `path_prefix` attributes. These attributes determine how files are named and where results 
-are saved on your hard disk.
+Give the search a `path_prefix` and `name` to enable persistent output. The configured output root is normally `output`;
+do not repeat `output` inside `path_prefix`. Here the path identifies the dataset, model and search. PyAutoFit appends
+a deterministic identifier derived from the model and search configuration, rather than a random directory name.
 
-Benefits of saving results to the hard disk include:
+Inside a run, `model.info` describes the model in readable form, `model.results` summarizes inferred parameters and
+`search.summary` reports search information such as runtime. The `image` folder holds visual diagnostics, and
+search-specific internal files support resuming the search.
 
-- More efficient inspection of results for multiple datasets compared to using a Jupyter Notebook.
-- Results are saved on-the-fly, allowing you to check the progress of a fit midway.
-- Additional information about a fit, such as visualizations, can be saved (see below).
-- Unfinished runs can be resumed from where they left off if they are terminated.
-- On high-performance supercomputers, results often need to be saved in this manner.
+The `files` folder contains the machine-readable record:
 
-Here's how to enable the output of results to the hard disk:
+- `model.json`: model classes, parameter names, fixed values and priors.
+- `search.json`: the search class and configuration used for this fit.
+- `samples_summary.json`: compact parameter estimates and available evidence information.
+- `samples.csv`: sampled parameter values, likelihoods, priors and weights.
+- `samples_info.json`: metadata needed to interpret the samples.
+- `info.json`: optional metadata supplied to `fit`, such as a dataset label.
+- `covariance.csv`: parameter covariance, when available and enabled.
+
+Additional files depend on the search and output configuration. Later in this example we also save
+`science_summary.json`: the Gaussian width and residual statistics have meaning for this particular fitting problem.
+These summaries make a collection of fits useful scientifically, beyond simply keeping their sample arrays.
+
+We use explicit priors so that the assumptions recorded in `model.json` are easy to recognize.
 """
-search = af.Emcee(path_prefix=path.join("folder_0", "folder_1"), name="my_search_name")
+model = af.Model(af.ex.Gaussian)
+model.centre = af.UniformPrior(lower_limit=0.0, upper_limit=100.0)
+model.normalization = af.UniformPrior(lower_limit=0.0, upper_limit=100.0)
+model.sigma = af.UniformPrior(lower_limit=0.1, upper_limit=30.0)
 
 """
-The screenshot below shows the output folder where all output is enabled:
+For example, the `centre` entry in the saved `model.json` includes these fields (other fields omitted):
 
-.. image:: https://raw.githubusercontent.com/PyAutoLabs/PyAutoFit/main/docs/overview/image/output_example.png
-  :width: 400
-  :alt: Alternative text
+```json
+"centre": {
+    "type": "Uniform",
+    "lower_limit": 0.0,
+    "upper_limit": 100.0
+}
+```
 
-Let's break down the output folder generated by **PyAutoFit**:
-
-- **Unique Identifier**: Results are saved in a folder named with a unique identifier composed of random characters. 
-  This identifier is automatically generated based on the specific model fit. For scientific workflows involving 
-  numerous model fits, this ensures that each fit is uniquely identified without requiring manual updates to output paths.
-
-- **Info Files**: These files contain valuable information about the fit. For instance, `model.info` provides the 
-  complete model composition used in the fit, while `search.summary` details how long the search has been running 
-  and other relevant search-specific information.
-
-- **Files Folder**: Within the output folder, the `files` directory contains detailed information saved as `.json` 
-  files. For example, `model.json` stores the model configuration used in the fit. This enables researchers to 
-  revisit the results later and review how the fit was performed.
-
-**PyAutoFit** offers extensive tools for customizing hard-disk output. This includes using configuration files to 
-control what information is saved, which helps manage disk space utilization. Additionally, specific `.json` files 
-tailored to different models can be utilized for more detailed output.
-
-For many scientific workflows, having detailed output for each fit is crucial for thorough inspection and accurate
-interpretation of results. However, in scenarios where the volume of output data might overwhelm users or impede
-scientific study, this feature can be easily disabled by omitting the `name` or `path prefix` when initiating the search.
+It records the prior, not the inferred centre; estimates belong in the samples and their summary. This distinction
+lets us recover what was assumed and what was learned for every fit in a larger study.
 
 __Visualization__
 
-When search hard-disk output is enabled in **PyAutoFit**, the visualization of model fits can also be saved directly
-to disk. This capability is crucial for many scientific workflows as it allows for quick and effective assessment of
-fit quality.
+Specify visualization before fitting separately from visualization during fitting. Before inference, plot the data
+and uncertainties once. During inference, show the current maximum likelihood fit and residuals. Keeping a consistent
+set of plots across runs makes different models and datasets much easier to assess.
 
-To accomplish this, you can customize the `Visualizer` object of an `Analysis` class with a custom `Visualizer` class.
-This custom class is responsible for generating and saving visual representations of the model fits. By leveraging
-this approach, scientists can efficiently visualize and analyze the outcomes of model fitting processes.
+The `Visualizer` saves `data.png`, `model_fit.png` and `residuals.png` separately, so no plot overwrites another.
+It also saves a combined `fit.png` for the live notebook display used in the next section.
 """
 
 
 class Visualizer(af.Visualizer):
     @staticmethod
-    def visualize_before_fit(
-        analysis, paths: af.DirectoryPaths, model: af.AbstractPriorModel
-    ):
-        """
-        Before a model-fit, the `visualize_before_fit` method is called to perform visualization.
-
-        The function receives as input an instance of the `Analysis` class which is being used to perform the fit,
-        which is used to perform the visualization (e.g. it contains the data and noise map which are plotted).
-
-        This can output visualization of quantities which do not change during the model-fit, for example the
-        data and noise-map.
-
-        The `paths` object contains the path to the folder where the visualization should be output, which is determined
-        by the non-linear search `name` and other inputs.
-        """
-
-        import matplotlib.pyplot as plt
-
-        xvalues = np.arange(analysis.data.shape[0])
-
-        plt.errorbar(
-            x=xvalues,
-            y=analysis.data,
-            yerr=analysis.noise_map,
-            linestyle="",
-            color="k",
-            ecolor="k",
-            elinewidth=1,
-            capsize=2,
+    def visualize_before_fit(analysis, paths, model):
+        figure, axis = plt.subplots()
+        axis.errorbar(
+            analysis.xvalues, analysis.data, yerr=analysis.noise_map, fmt="k."
         )
-        plt.title("Maximum Likelihood Fit")
-        plt.xlabel("x value of profile")
-        plt.ylabel("Profile Normalization")
-        plt.savefig(path.join(paths.image_path, f"data.png"))
-        plt.clf()
+        axis.set(
+            xlabel="x", ylabel="Profile normalization", title="Data and uncertainties"
+        )
+        figure.tight_layout()
+        figure.savefig(path.join(paths.image_path, "data.png"))
+        plt.close(figure)
 
     @staticmethod
-    def visualize(analysis, paths: af.DirectoryPaths, instance, during_analysis):
-        """
-        During a model-fit, the `visualize` method is called throughout the non-linear search.
+    def visualize(analysis, paths, instance, during_analysis):
+        model_data = instance.model_data_from(xvalues=analysis.xvalues)
+        residuals = analysis.data - model_data
 
-        The function receives as input an instance of the `Analysis` class which is being used to perform the fit,
-        which is used to perform the visualization (e.g. it generates the model data which is plotted).
-
-        The `instance` passed into the visualize method is maximum log likelihood solution obtained by the model-fit
-        so far and it can be used to provide on-the-fly images showing how the model-fit is going.
-
-        The `paths` object contains the path to the folder where the visualization should be output, which is determined
-        by the non-linear search `name` and other inputs.
-        """
-        xvalues = np.arange(analysis.data.shape[0])
-
-        model_data = instance.model_data_from(xvalues=xvalues)
-        residual_map = analysis.data - model_data
-
-        """
-        The visualizer now outputs images of the best-fit results to hard-disk (checkout `visualizer.py`).
-        """
-        import matplotlib.pyplot as plt
-
-        plt.errorbar(
-            x=xvalues,
-            y=analysis.data,
-            yerr=analysis.noise_map,
-            linestyle="",
-            color="k",
-            ecolor="k",
-            elinewidth=1,
-            capsize=2,
+        figure, axis = plt.subplots()
+        axis.errorbar(
+            analysis.xvalues, analysis.data, yerr=analysis.noise_map, fmt="k."
         )
-        plt.plot(xvalues, model_data, color="r")
-        plt.title("Maximum Likelihood Fit")
-        plt.xlabel("x value of profile")
-        plt.ylabel("Profile Normalization")
-        plt.savefig(path.join(paths.image_path, f"model_fit.png"))
-        plt.clf()
-
-        plt.errorbar(
-            x=xvalues,
-            y=residual_map,
-            yerr=analysis.noise_map,
-            linestyle="",
-            color="k",
-            ecolor="k",
-            elinewidth=1,
-            capsize=2,
+        axis.plot(analysis.xvalues, model_data, color="r")
+        axis.set(
+            xlabel="x", ylabel="Profile normalization", title="Maximum likelihood fit"
         )
-        plt.title("Residuals of Maximum Likelihood Fit")
-        plt.xlabel("x value of profile")
-        plt.ylabel("Residual")
-        plt.savefig(path.join(paths.image_path, f"model_fit.png"))
-        plt.clf()
+        figure.tight_layout()
+        figure.savefig(path.join(paths.image_path, "model_fit.png"))
+        plt.close(figure)
+
+        figure, axis = plt.subplots()
+        axis.errorbar(analysis.xvalues, residuals, yerr=analysis.noise_map, fmt="k.")
+        axis.axhline(0.0, color="r")
+        axis.set(
+            xlabel="x", ylabel="Residual", title="Residuals of maximum likelihood fit"
+        )
+        figure.tight_layout()
+        figure.savefig(path.join(paths.image_path, "residuals.png"))
+        plt.close(figure)
+
+        figure, axes = plt.subplots(2, 1, sharex=True, figsize=(7, 6))
+        axes[0].errorbar(
+            analysis.xvalues, analysis.data, yerr=analysis.noise_map, fmt="k."
+        )
+        axes[0].plot(analysis.xvalues, model_data, color="r")
+        axes[0].set(
+            ylabel="Profile normalization", title="Current maximum likelihood fit"
+        )
+        axes[1].errorbar(analysis.xvalues, residuals, yerr=analysis.noise_map, fmt="k.")
+        axes[1].axhline(0.0, color="r")
+        axes[1].set(xlabel="x", ylabel="Residual")
+        figure.tight_layout()
+        figure.savefig(path.join(paths.image_path, "fit.png"))
+        plt.close(figure)
 
 
 """
-The ``Analysis`` class is defined following the same API as before, but now with its `Visualizer` class attribute
-overwritten with the ``Visualizer`` class above.
+__On The Fly__
+
+During inference, quick updates report progress and can refresh a model-fit image in a Jupyter notebook. The live
+display reads `fit.png`; our `perform_quick_update` hook refreshes that image using the visualizer above. The same
+plots remain available on disk when running this file in a terminal.
+
+Quick updates run more frequently than full updates, which save samples and run more expensive diagnostics.
+`iterations_per_quick_update` counts likelihood evaluations; `iterations_per_full_update` uses the search's own
+update cadence. Neither is a wall-clock timer. Choose a cadence that gives useful feedback without spending most
+of the run plotting. In a desktop script, live updates open a separate viewer; set `live_visual_update=False` for
+a headless or cluster run, while keeping the saved plots.
+
+Live output builds intuition: is the fit improving, are residual structures persisting, and is exploration progressing?
+A good-looking curve alone does not establish convergence. Use posterior and search diagnostics too before deciding
+whether inference is performing reliably. A short demonstration run is a starting point for tuning those settings.
+
+Our analysis also saves the best-fit Gaussian full width at half maximum (FWHM), residual RMS and chi-squared in
+`science_summary.json`. FWHM uses the x-axis units; residual RMS uses the data units. These are point-estimate
+diagnostics, not posterior uncertainties or a calibrated goodness-of-fit probability.
 """
 
 
 class Analysis(af.Analysis):
-    """
-    This over-write means the `Visualizer` class is used for visualization throughout the model-fit.
-
-    This `VisualizerExample` object is in the `autofit.example.visualize` module and is used to customize the
-    plots output during the model-fit.
-
-    It has been extended with visualize methods that output visuals specific to the fitting of `1D` data.
-    """
-
     Visualizer = Visualizer
 
     def __init__(self, data, noise_map):
-        """
-        An Analysis class which illustrates visualization.
-        """
         super().__init__()
-
         self.data = data
         self.noise_map = noise_map
+        self.xvalues = np.arange(data.shape[0])
 
     def log_likelihood_function(self, instance):
-        """
-        The `log_likelihood_function` is identical to the example above
-        """
-        xvalues = np.arange(self.data.shape[0])
+        residuals = self.data - instance.model_data_from(xvalues=self.xvalues)
+        chi_squared = np.sum((residuals / self.noise_map) ** 2)
+        noise_normalization = np.sum(np.log(2.0 * np.pi * self.noise_map**2))
+        return -0.5 * (chi_squared + noise_normalization)
 
-        model_data = instance.model_data_from(xvalues=xvalues)
-        residual_map = self.data - model_data
-        chi_squared_map = (residual_map / self.noise_map) ** 2.0
-        chi_squared = sum(chi_squared_map)
-        noise_normalization = np.sum(np.log(2 * np.pi * noise_map**2.0))
-        log_likelihood = -0.5 * (chi_squared + noise_normalization)
+    def science_summary(self, instance):
+        residuals = self.data - instance.model_data_from(xvalues=self.xvalues)
+        return {
+            "dataset": "gaussian_x1",
+            "estimate": "maximum_likelihood",
+            "units": {
+                "gaussian_fwhm": "x coordinate (pixel index)",
+                "residual_rms": "data units",
+                "chi_squared": "dimensionless",
+            },
+            "gaussian_fwhm": float(2.0 * np.sqrt(2.0 * np.log(2.0)) * instance.sigma),
+            "residual_rms": float(np.sqrt(np.mean(residuals**2))),
+            "chi_squared": float(np.sum((residuals / self.noise_map) ** 2)),
+            "number_of_data_points": int(self.data.size),
+        }
 
-        return log_likelihood
+    def perform_quick_update(self, paths, instance):
+        self.Visualizer.visualize(self, paths, instance, during_analysis=True)
+
+    def save_results(self, paths, result):
+        paths.save_json("science_summary", self.science_summary(result.instance))
 
 
-"""
-Visualization of the results of the non-linear search, for example the "Probability Density
-Function", are also automatically output during the model-fit on the fly.
-
-We now perform a quick fit, outputting the results to the hard disk and visualizing the model-fit,
-so you can see how the results are output and the visualizations produced.
-"""
 analysis = Analysis(data=data, noise_map=noise_map)
-
-model = af.Model(af.ex.Gaussian)
-
-search = af.DynestyStatic(
-    path_prefix=path.join("result_folder"), name="overview_2_scientific_workflow"
+search = af.Nautilus(
+    path_prefix=path.join("scientific_workflow", "gaussian_x1", "gaussian"),
+    name="nautilus",
+    n_live=50,
+    n_eff=100,
+    number_of_cores=1,
+    iterations_per_quick_update=500,
+    iterations_per_full_update=1000,
+    live_visual_update=True,
 )
-
-result = search.fit(model=model, analysis=analysis)
+result = search.fit(
+    model=model,
+    analysis=analysis,
+    info={
+        "dataset": "gaussian_x1",
+        "model_label": "gaussian",
+        "search_label": "nautilus",
+    },
+)
+print("Saved run:", search.paths.output_path)
+print(json.dumps(analysis.science_summary(result.instance), indent=2))
 
 """
 __Loading Results__
 
-In your scientific workflow, you'll likely conduct numerous model fits, each generating outputs stored in individual
-folders on your hard disk.
+The directory aggregator discovers saved fits without rerunning inference. Point it at the actual output path used
+by the search; this respects the configured output root. A broader study folder discovers many runs at once.
 
-To efficiently work with these results in Python scripts or Jupyter notebooks, **PyAutoFit** provides
-the `aggregator` API. This tool simplifies the process of loading results from hard disk into Python variables.
-By pointing the aggregator at the folder containing your results, it automatically loads all relevant information
-from each model fit.
-
-This capability streamlines the workflow by enabling easy manipulation and inspection of model-fit results directly
-within your Python environment. It's particularly useful for managing and analyzing large-scale studies where
-handling multiple model fits and their associated outputs is essential.
+Below, load saved samples and print a labelled parameter row. The generator loads one result at a time, avoiding
+holding every run in memory. The custom JSON can also be read independently of the Python analysis class.
 """
 from autofit.aggregator.aggregator import Aggregator
 
-agg = Aggregator.from_directory(
-    directory=path.join("result_folder"),
-)
+agg = Aggregator.from_directory(directory=search.paths.output_path)
+for samples, info in zip(agg.values("samples"), agg.values("info")):
+    instance = samples.max_log_likelihood()
+    median = samples.median_pdf()
+    lower = samples.values_at_lower_sigma(sigma=1.0)
+    upper = samples.values_at_upper_sigma(sigma=1.0)
+    print(
+        info["dataset"],
+        info["model_label"],
+        info["search_label"],
+        "centre =",
+        instance.centre,
+        "normalization =",
+        instance.normalization,
+        "sigma =",
+        instance.sigma,
+    )
+    print(
+        "Median sigma and 68.3% credible interval:",
+        median.sigma,
+        (lower.sigma, upper.sigma),
+    )
+
+print(search.paths.load_json("science_summary"))
 
 """
-The ``values`` method is used to specify the information that is loaded from the hard-disk, for example the
-``samples`` of the model-fit.
-
-The for loop below iterates over all results in the folder passed to the aggregator above.
-"""
-for samples in agg.values("samples"):
-    print(samples.parameter_lists[0])
-
-"""
-Result loading uses Python generators to ensure that memory use is minimized, meaning that even when loading
-thousands of results from hard-disk the memory use of your machine is not exceeded.
-
-The `result cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/model.html>`_ gives a full run-through of
-the tools that allow results to be loaded and inspected.
-
 __Result Customization__
 
-An effective scientific workflow ensures that this object contains all information a user needs to quickly inspect
-the quality of a model-fit and undertake scientific interpretation.
+Give the returned result properties that make scientific interpretation convenient: for example, the best-fit model
+evaluated on the data grid, or the same derived width stored in our JSON summary. This keeps the scientific definition
+in one place and makes interactive inspection agree with saved output.
 
-The result can be can be customized to include additional information about the model-fit that is specific to your
-model-fitting problem.
-
-For example, for fitting 1D profiles, the ``Result`` could include the maximum log likelihood model 1D data,
-which would enable the following code to be used after the model-fit:
-
-print(result.max_log_likelihood_model_data_1d)
-
-To do this we use the custom result API, where we first define a custom ``Result`` class which includes the
-property ``max_log_likelihood_model_data_1d``:
+We can construct a custom result from the completed fit without sampling again. For future searches, assign
+`Result = ResultExample` on the analysis and override `make_result` to pass `analysis=self`, as illustrated in the
+[result cookbook](https://pyautofit.readthedocs.io/en/latest/cookbooks/result.html).
 """
 
 
 class ResultExample(af.Result):
     @property
-    def max_log_likelihood_model_data_1d(self) -> np.ndarray:
-        """
-        Returns the maximum log likelihood model's 1D model data.
+    def max_log_likelihood_model_data_1d(self):
+        return self.instance.model_data_from(xvalues=self.analysis.xvalues)
 
-        This is an example of how we can pass the `Analysis` class a custom `Result` object and extend this result
-        object with new properties that are specific to the model-fit we are performing.
-        """
-        xvalues = np.arange(self.analysis.data.shape[0])
-
-        return self.instance.model_data_from(xvalues=xvalues)
+    @property
+    def science_summary(self):
+        return self.analysis.science_summary(self.instance)
 
 
-"""
-The custom result has access to the analysis class, meaning that we can use any of its methods or properties to
-compute custom result properties.
-
-To make it so that the ``ResultExample`` object above is returned by the search we overwrite the ``Result`` class attribute
-of the ``Analysis`` and define a ``make_result`` object describing what we want it to contain:
-"""
-
-
-class Analysis(af.Analysis):
-    """
-    This overwrite means the `ResultExample` class is returned after the model-fit.
-    """
-
-    Result = ResultExample
-
-    def __init__(self, data, noise_map):
-        """
-        An Analysis class which illustrates custom results.
-        """
-        super().__init__()
-
-        self.data = data
-        self.noise_map = noise_map
-
-    def log_likelihood_function(self, instance):
-        """
-        The `log_likelihood_function` is identical to the example above
-        """
-        xvalues = np.arange(self.data.shape[0])
-
-        model_data = instance.model_data_from(xvalues=xvalues)
-        residual_map = self.data - model_data
-        chi_squared_map = (residual_map / self.noise_map) ** 2.0
-        chi_squared = sum(chi_squared_map)
-        noise_normalization = np.sum(np.log(2 * np.pi * noise_map**2.0))
-        log_likelihood = -0.5 * (chi_squared + noise_normalization)
-
-        return log_likelihood
-
-    def make_result(
-        self,
-        samples_summary: af.SamplesSummary,
-        paths: af.AbstractPaths,
-        samples: Optional[af.SamplesPDF] = None,
-        search_internal: Optional[object] = None,
-        analysis: Optional[object] = None,
-    ) -> Result:
-        """
-        Returns the `Result` of the non-linear search after it is completed.
-
-        The result type is defined as a class variable in the `Analysis` class (see top of code under the python code
-        `class Analysis(af.Analysis)`.
-
-        The result can be manually overwritten by a user to return a user-defined result object, which can be extended
-        with additional methods and attribute specific to the model-fit.
-
-        This example class does example this, whereby the analysis result has been overwritten with the `ResultExample`
-        class, which contains a property `max_log_likelihood_model_data_1d` that returns the model data of the
-        best-fit model. This API means you can customize your result object to include whatever attributes you want
-        and therefore make a result object specific to your model-fit and model-fitting problem.
-
-        The `Result` object you return can be customized to include:
-
-        - The samples summary, which contains the maximum log likelihood instance and median PDF model.
-
-        - The paths of the search, which are used for loading the samples and search internal below when a search
-        is resumed.
-
-        - The samples of the non-linear search (e.g. MCMC chains) also stored in `samples.csv`.
-
-        - The non-linear search used for the fit in its internal representation, which is used for resuming a search
-        and making bespoke visualization using the search's internal results.
-
-        - The analysis used to fit the model (default disabled to save memory, but option may be useful for certain
-        projects).
-
-        Parameters
-        ----------
-        samples_summary
-            The summary of the samples of the non-linear search, which include the maximum log likelihood instance and
-            median PDF model.
-        paths
-            An object describing the paths for saving data (e.g. hard-disk directories or entries in sqlite database).
-        samples
-            The samples of the non-linear search, for example the chains of an MCMC run.
-        search_internal
-            The internal representation of the non-linear search used to perform the model-fit.
-        analysis
-            The analysis used to fit the model.
-
-        Returns
-        -------
-        Result
-            The result of the non-linear search, which is defined as a class variable in the `Analysis` class.
-        """
-        return self.Result(
-            samples_summary=samples_summary,
-            paths=paths,
-            samples=samples,
-            search_internal=search_internal,
-            analysis=self,
-        )
-
-
-"""
-By repeating the model-fit above, the `Result` object returned by the search will be an instance of the `ResultExample`
-class, which includes the property `max_log_likelihood_model_data_1d`.
-"""
-analysis = Analysis(data=data, noise_map=noise_map)
-
-model = af.Model(af.ex.Gaussian)
-
-search = af.DynestyStatic(
-    path_prefix=path.join("output", "result_folder"),
-    name="overview_2_scientific_workflow",
+scientific_result = ResultExample(
+    samples_summary=result.samples_summary,
+    paths=search.paths,
+    samples=result.samples,
+    analysis=analysis,
 )
-
-result = search.fit(model=model, analysis=analysis)
-
-print(result.max_log_likelihood_model_data_1d)
+print(
+    "Best-fit profile shape:", scientific_result.max_log_likelihood_model_data_1d.shape
+)
+print("Gaussian FWHM:", scientific_result.science_summary["gaussian_fwhm"])
 
 """
-Result customization has full support for **latent variables**, which are parameters that are not sampled by the non-linear
-search but are computed from the sampled parameters.
-
-They are often integral to assessing and interpreting the results of a model-fit, as they present information
-on the model in a different way to the sampled parameters.
-
-The `result cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/result.html>`_ gives a full run-through of
-all the different ways the result can be customized.
+Derived quantities can also be evaluated for posterior samples to obtain uncertainties. See the result cookbook for
+latent variables; saving a maximum likelihood FWHM alone does not provide its credible interval.
 
 __Model Composition__
 
-In many scientific workflows, there's often a need to construct and fit a variety of different models. This
-could range from making minor adjustments to a model's parameters to handling complex models with thousands of parameters and multiple components.
+The first guide already covers composing models, fixing and linking parameters, assertions and arithmetic. Here the
+scientific question is how to compare competing assumptions for the same dataset in a way we can interpret later.
 
-For simpler scenarios, adjustments might include:
+For example, compare a freely varying Gaussian width with a fixed width motivated by an external measurement.
+Use meaningful model labels, save each model's priors and fixed values, and generate matching diagnostic plots.
+Inspect changes in parameter constraints and residuals; compare Bayesian evidence when both searches provide it,
+remembering that evidence depends on the priors. More models are useful only when their differences remain traceable.
 
-- **Parameter Assignment**: Setting specific values for certain parameters or linking parameters together so they share the same value.
-- **Parameter Assertions**: Imposing constraints on model parameters, such as requiring one parameter to be greater than another.
-- **Model Arithmetic**: Defining relationships between parameters using arithmetic operations, such as defining a 
-  linear relationship like `y = mx + c`, where `m` and `c` are model parameters.
+These definitions illustrate two alternatives; they do not launch additional fits.
+"""
+free_width_model = model.copy()
+fixed_width_model = model.copy()
+fixed_width_model.sigma = 10.0
+models = {
+    "gaussian_free_width": free_width_model,
+    "gaussian_fixed_width": fixed_width_model,
+}
+for label, candidate in models.items():
+    print(label, "free parameters:", candidate.prior_count)
 
-In more intricate cases, models might involve numerous parameters and complex compositions of multiple model components.
-
-**PyAutoFit** offers a sophisticated model composition API designed to handle these complexities. It provides
-tools for constructing elaborate models using lists of Python classes, NumPy arrays and hierarchical structures of Python classes.
-
-For a detailed exploration of these capabilities, you can refer to
-the `model cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/model.html>`_, which provides comprehensive
-guidance on using the model composition API. This resource covers everything from basic parameter assignments to
-constructing complex models with hierarchical structures.
+"""
+The [model cookbook](https://pyautofit.readthedocs.io/en/latest/cookbooks/model.html) explains larger compositions.
 
 __Searches__
 
-Different model-fitting problems often require different approaches to fitting the model effectively.
+Try different searches on the same model and dataset while developing the workflow. Compare runtime, posterior
+agreement and search-specific diagnostics; a faster run is useful only if it gives reliable inference. Nested
+sampling, MCMC and optimization have different outputs: do not treat an optimizer as a posterior sampler or expect
+an MCMC run to supply nested-sampling evidence.
 
-The choice of the most suitable search method depends on several factors:
+Model dimension, degeneracy, likelihood cost and the availability of gradients all affect search choice. Save the
+search settings alongside each model so an apparent scientific difference can be investigated as a numerical one.
 
-- **Model Dimensions**: How many parameters constitute the model and its non-linear parameter space?
-- **Model Complexity**: Different models exhibit varying degrees of parameter degeneracy, which necessitates different 
-  non-linear search techniques.
-- **Run Times**: How efficiently can the likelihood function be evaluated and the model-fit performed?
-- **Gradients**: If your likelihood function is differentiable, leveraging JAX and using a search that exploits 
-  gradient information can be advantageous.
+Here are two nested-sampling search definitions for a later comparison. We do not run them in this short overview.
+"""
+searches = {"nautilus": af.Nautilus, "dynesty": af.DynestyStatic}
+for label, search_class in searches.items():
+    print(label, search_class.__name__)
 
-**PyAutoFit** provides support for a wide range of non-linear searches, ensuring that users can select the method
-best suited to their specific problem.
-
-During the initial stages of setting up your scientific workflow, it's beneficial to experiment with different
-searches. This process helps identify which methods reliably infer maximum likelihood fits to the data and assess
-their efficiency in terms of computational time.
-
-For a comprehensive exploration of available search methods and customization options, refer to
-the `search cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/search.html>`_. This resource covers
-detailed guides on all non-linear searches supported by PyAutoFit and provides insights into how to tailor them to your 
-needs.
-
-There are currently no documentation guiding reads on what search might be appropriate for their problem and how to
-profile and experiment with different methods. Writing such documentation is on the to do list and will appear
-in the future. However, you can make progress now simply using visuals output by PyAutoFit and the ``search.summary` file.
+"""
+See the [search cookbook](https://pyautofit.readthedocs.io/en/latest/cookbooks/search.html) for settings and diagnostics.
 
 __Configs__
 
-As you refine your scientific workflow, you'll often find yourself repeatedly setting up models with identical priors
-and using the same non-linear search configurations. This repetition can result in lengthy Python scripts with
-redundant inputs.
+Once the workflow works for a few datasets, put shared defaults for priors, search settings and output in configuration
+files. Record deliberate per-fit overrides, such as the priors in this example, so comparisons remain understandable.
+Reusable defaults reduce repetitive scripts; each saved model and search still records what that fit actually used.
 
-To streamline this process, configuration files can be utilized to define default values. This approach eliminates
-the need to specify identical prior inputs and search settings in every script, leading to more concise and
-readable Python code. Moreover, it reduces the cognitive load associated with performing model-fitting tasks.
-
-For a comprehensive guide on setting up and utilizing configuration files effectively, refer
-to the `configs cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/configs.html>`_. This resource provides
-detailed instructions on configuring and optimizing your PyAutoFit workflow through the use of configuration files.
+See the [configs cookbook](https://pyautofit.readthedocs.io/en/latest/cookbooks/configs.html).
 
 __Database__
 
-By default, model-fitting results are written to folders on hard-disk, which is straightforward for navigating and
-manual inspection. However, this approach becomes impractical for large datasets or extensive scientific workflows,
-where manually checking each result can be time-consuming.
+A directory collection is convenient for browsing individual fits. As the study grows, a SQLite database makes it
+easier to select runs and compare subsets by their models or saved metadata. Import completed outputs into the
+database and query them without repeating inference. This complements the plots and files used for individual checks.
 
-To address this challenge, all results can be stored in an sqlite3 relational database. This enables loading results
-directly into Jupyter notebooks or Python scripts for inspection, analysis, and interpretation. The database
-supports advanced querying capabilities, allowing users to retrieve specific model-fits based on criteria such
-as the fitted model or dataset.
+Import our saved run into a SQLite database next to its output folder and select completed Nautilus runs. Repeating
+the import updates existing entries rather than requiring another inference run.
+"""
+database = af.Aggregator.from_database(
+    filename=path.join(path.dirname(search.paths.output_path), "results.sqlite"),
+    completed_only=True,
+)
+database.add_directory(directory=search.paths.output_path)
+nautilus_results = database(database.search.name == "nautilus")
+for saved_info in nautilus_results.values("info"):
+    print("Database result:", saved_info)
+database.session.close()
 
-For a comprehensive guide on using the database functionality within PyAutoFit, refer to
-the `database cookbook <https://pyautofit.readthedocs.io/en/latest/cookbooks/multiple_datasets.html>`. This resource
-provides detailed instructions on leveraging the database to manage and analyze model-fitting results efficiently.
+"""
+See the [multiple datasets cookbook](https://pyautofit.readthedocs.io/en/latest/cookbooks/multiple_datasets.html)
+for creating a database, adding directories and querying results.
 
 __Scaling Up__
 
-Regardless of your final scientific objective, it's crucial to consider scalability in your scientific workflow and
-ensure it remains flexible to accommodate varying scales of complexity.
+Begin with a few datasets and iterate on visualization, diagnostics and summaries. Once you can reliably interpret
+one fit, use the same structure across a study. Below is an illustrative layout, not twenty fits run by this script.
+Each of five datasets has two model choices and two searches per model. Expand any search's identifier folder to
+find the same readable summaries, machine-readable files and images described above.
 
-Initially, scientific studies often begin with a small number of datasets (e.g., tens of datasets). During this phase,
-researchers iteratively refine their models and gain insights through trial and error. This involves fitting numerous
-models to datasets and manually inspecting results to evaluate model performance. A flexible workflow is essential
-here, allowing rapid iteration and outputting results in a format that facilitates quick inspection and interpretation.
+```text
+output/scientific_workflow/
+├── dataset_01/
+│   ├── gaussian_free_width/
+│   │   ├── nautilus/<identifier>/
+│   │   │   ├── model.info, model.results, search.summary
+│   │   │   ├── files/  (model.json, samples.csv, science_summary.json, ...)
+│   │   │   └── image/  (data.png, model_fit.png, residuals.png, fit.png)
+│   │   └── dynesty/<identifier>/
+│   └── gaussian_fixed_width/{nautilus,dynesty}/<identifier>/
+├── dataset_02/{gaussian_free_width,gaussian_fixed_width}/{nautilus,dynesty}/<identifier>/
+├── dataset_03/{gaussian_free_width,gaussian_fixed_width}/{nautilus,dynesty}/<identifier>/
+├── dataset_04/{gaussian_free_width,gaussian_fixed_width}/{nautilus,dynesty}/<identifier>/
+└── dataset_05/{gaussian_free_width,gaussian_fixed_width}/{nautilus,dynesty}/<identifier>/
+```
 
-As the study progresses, researchers may scale up to larger datasets (e.g., thousands of datasets). Manual inspection
-of individual results becomes impractical, necessitating a more automated approach to model fitting and interpretation.
-Additionally, analyses may transition to high-performance computing environments, requiring output formats suitable for 
-these setups.
+Braces abbreviate separate folders. Dataset identifiers should refer to known inputs; keep those inputs and their
+provenance with the study rather than assuming parameter samples alone reproduce a scientific analysis.
 
-**PyAutoFit** is designed to enable the development of effective scientific workflows for both small and large datasets.
+You can browse this collection on disk, load it with the aggregator, or ask an assistant:
 
-__Wrap Up__
+> Inspect all five datasets and compare the models and searches fitted to each. Summarize parameter constraints,
+> fit quality and runtime, compare Bayesian evidence where available, and link each assessment to its saved output.
+> Flag results that need closer inspection.
 
-This overview has provided a comprehensive guide to the key features of **PyAutoFit** that support the development of
-effective scientific workflows. By leveraging these tools, researchers can tailor their workflows to specific problems,
-streamline model fitting, and gain valuable insights into their scientific studies.
-
-The final aspect of core functionality, described in the next overview, is the wide variety of statistical
-inference methods available in **PyAutoFit**. These methods include graphical models, hierarchical models,
-Bayesian model comparison and many more.
+That is the purpose of a scientific workflow: many fits remain navigable, interpretable and comparable as the study
+grows. The next overview introduces further inference methods, including graphical and hierarchical models.
 """
