@@ -421,24 +421,11 @@
     "title": "Overview: The Basics"
   },
   {
-    "contents": [
-      "Data",
-      "On The Fly",
-      "Hard Disk Output",
-      "Visualization",
-      "Loading Results",
-      "Result Customization",
-      "Model Composition",
-      "Searches",
-      "Configs",
-      "Database",
-      "Scaling Up",
-      "Wrap Up"
-    ],
+    "contents": [],
     "cross_refs": [],
     "notebook": "notebooks/overview/overview_2_scientific_workflow.ipynb",
     "path": "scripts/overview/overview_2_scientific_workflow.py",
-    "summary": "A scientific workflow comprises the tasks you perform to conduct a scientific study. This includes fitting models to datasets, interpreting the results, and gaining insights into your scientific problem.",
+    "summary": "A scientific workflow connects fitting a model to interpreting, comparing and revisiting its results. Start with one completed fit, then build a study in which many datasets, models and searches remain easy to inspect.",
     "title": "Overview: Scientific Workflow"
   },
   {
