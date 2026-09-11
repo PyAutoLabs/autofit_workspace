@@ -233,6 +233,17 @@ The customized model can be inspected by printing its `info` attribute.
 print(model.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+Customization is where the map earns its place, because linking a parameter to another or adding an assertion changes 
+a model's structure and not just its numbers. The `centre` pill states the expression `centre = normalization + sigma` 
+that defines it and the assertions are drawn as constraints, which the `info` above does not print at all.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 The overwriting of priors shown above can be achieved via the following alternative API:
 """
 model = af.Model(
@@ -286,6 +297,12 @@ This information is again displayed in the `info` attribute:
 """
 print("\nInfo:")
 print(model.info)
+
+"""
+The model figure tags `centre` as `2D`, which is why counting the pills on the map does not reproduce the four free 
+parameters its footer counts.
+"""
+af.ModelPlotter(model).figure()
 
 """
 Here are examples of how model customization can be applied to a model with tuple parameters:
@@ -497,6 +514,12 @@ model.exponential.add_assertion(exponential.rate > 5.0)
 print(model.info)
 
 """
+A `Collection` is drawn on the model figure as one card per component, with the fixed values greyed out and any 
+assertion attached to the component it constrains.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __JSon Outputs (Collection)__
 
 A `Collection` has a `dict` attribute, which express all information about the model as a Python dictionary.
@@ -544,6 +567,13 @@ model = af.Collection(
 )
 
 print(model.info)
+
+"""
+Repeated components collapse on the model figure into a single dashed frame badged with how many components it stands 
+for, so this five component model is drawn as two frames whose parameters are marked `independent` (one prior per 
+member) rather than as five near identical cards.
+"""
+af.ModelPlotter(model).figure()
 
 """
 A model can be created via `af.Collection()` where a dictionary of `af.Model()` objects are passed to it.
@@ -780,4 +810,8 @@ and `af.Collection()` object.
 
 Advanced model composition uses multi-level models, which compose models from hierarchies of Python classes. This is
 described in the multi-level model cookbook. 
+
+The model figures drawn above can also be output for every fit: setting `model_figure: true` in the 
+workspace's `config/output.yaml` writes a `model.png` beside the `model.info` file of every search, which is off by 
+default.
 """

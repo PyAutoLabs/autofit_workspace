@@ -189,6 +189,17 @@ To inspect the model, we print `factor_graph.global_prior_model.info`.
 print(factor_graph.global_prior_model.info)
 
 """
+We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above 
+is its **legend**: the map shows the structure, meaning which dataset gets which component and which parameters are 
+shared between them, whereas the `info` lists the priors and values themselves.
+
+Because every dataset is fitted by the same `Gaussian`, the three components collapse into one frame and each of 
+`centre`, `normalization` and `sigma` carries a shared badge, which is the picture of a three parameter fit to three 
+datasets.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 To fit multiple datasets, we pass the `FactorGraphModel` to a non-linear search.
 
 Unlike single-dataset fitting, we now pass the `factor_graph.global_prior_model` as the model and 
@@ -336,6 +347,12 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list)
 print(factor_graph.global_prior_model.info)
 
 """
+Only `centre` now carries the shared badge on the model figure, whereas `normalization` and `sigma` are marked 
+`independent`, meaning one prior per dataset, and the footer counts the seven unique sampled scalars this makes.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 Fit this model to the data using dynesty.
 """
 search = af.DynestyStatic(
@@ -407,6 +424,14 @@ The factor graph is created and its info can be printed after the relational mod
 factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
 print(factor_graph.global_prior_model.info)
+
+"""
+The relational model is the case where the model figure is worth the most, because the relation is structure whereas 
+the `info` above can only express it as nesting. Each dataset's `sigma` pill states the expression that defines it and 
+`centre` and `normalization` are badged as shared, so the map says directly that adding a fourth dataset would add a 
+fourth card and no new parameters.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
 
 """
 We can fit the model as per usual.
