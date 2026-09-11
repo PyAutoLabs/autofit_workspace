@@ -32,9 +32,9 @@ This script is split into the following sections:
 - **Analysis**: Create Analysis objects for each dataset with a log likelihood function.
 - **Model**: Compose a graphical model with a shared prior across multiple model components.
 - **Analysis Factors**: Pair each Model with its corresponding Analysis class at factor graph nodes.
-- **Factor Graph**: Combine the Analysis Factors into a factor graph representing the graphical model.
+- **Factor Graph**: Combine the Analysis Factors into a factor graph and draw the graphical model.
 - **Search**: Create a non-linear search and fit the factor graph.
-- **Hierarchical Models**: Discuss how shared parameters can be drawn from a common parent distribution.
+- **Hierarchical Models**: Compose a model where each dataset's `centre` is drawn from a common parent distribution.
 - **Expectation Propagation**: Introduce the EP framework for scaling graphical models to high dimensionality.
 
 __Example Source Code (`af.ex`)__
@@ -220,9 +220,7 @@ A factor graph defines the graphical model we have composed. For example, it def
 that make up our model (e.g. the three `Gaussian` classes) and how their parameters are linked or shared (e.g. that
 each `Gaussian` has its own unique `normalization` and `sigma`, but a shared `centre` parameter.
 
-This is what our factor graph looks like: 
-
-The factor graph above is made up of two components:
+A factor graph is made up of two components:
 
 - Nodes: these are points on the graph where we have a unique set of data and a model that is made up of a subset of 
 our overall graphical model. This is effectively the `AnalysisFactor` objects we created above. 
@@ -231,6 +229,24 @@ our overall graphical model. This is effectively the `AnalysisFactor` objects we
 same values when fitting different datasets.
 """
 factor_graph = af.FactorGraphModel(*analysis_factor_list)
+
+"""
+To inspect the model, we print `factor_graph.global_prior_model.info`.
+"""
+print(factor_graph.global_prior_model.info)
+
+"""
+We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of the model and the `info` above
+is its **legend**: the map shows the structure, meaning which dataset gets which component, which parameters are shared
+between them and where the data enters, whereas the `info` lists the priors and values themselves.
+
+A graphical model is where the map says the most, because the three datasets collapse into a single dashed plate
+badged with the number of datasets instead of three repeated cards, the shared `centre` is hoisted into its own card
+above that plate with every member of the plate pointing back at it, and the observed data enters as its own green
+`observed` pill, which is visibly a different kind of thing from the grey pills used for fixed values. The `info`
+above can only list the same `centre` prior once per dataset and cannot show the data at all.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
 
 """
 __Search__
@@ -257,6 +273,76 @@ to be drawn from a common parent distribution.
 
 Fitting the datasets simultaneously enables better estimate of this global hierarchical distribution.
 
+We compose one below, on the same three datasets fitted above. Every `Gaussian` is now given its own `centre` prior,
+because the centres are no longer assumed to be the same number as one another.
+"""
+model_list = []
+
+for model_index in range(len(data_list)):
+    gaussian = af.Model(af.ex.Gaussian)
+
+    gaussian.centre = af.TruncatedGaussianPrior(
+        mean=50.0, sigma=20.0, lower_limit=0.0, upper_limit=100.0
+    )
+    gaussian.normalization = af.LogUniformPrior(lower_limit=1e-6, upper_limit=1e6)
+    gaussian.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=25.0)
+
+    model_list.append(gaussian)
+
+"""
+Each model is paired with its `Analysis` at an `AnalysisFactor`, exactly as it was for the graphical model above.
+"""
+analysis_factor_list = []
+
+for model, analysis in zip(model_list, analysis_list):
+    analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
+
+    analysis_factor_list.append(analysis_factor)
+
+"""
+The `HierarchicalFactor` is the parent distribution that the individual `centre`'s are assumed to be drawn from. Its
+own `mean` and `sigma` are free parameters of the fit, which is what makes the model hierarchical rather than shared.
+"""
+hierarchical_factor = af.HierarchicalFactor(
+    af.GaussianPrior,
+    mean=af.TruncatedGaussianPrior(
+        mean=50.0, sigma=10, lower_limit=0.0, upper_limit=100.0
+    ),
+    sigma=af.TruncatedGaussianPrior(
+        mean=10.0, sigma=5.0, lower_limit=0.0, upper_limit=100.0
+    ),
+)
+
+"""
+We now add each individual `Gaussian`'s `centre` to the `hierarchical_factor`, which declares that each was drawn
+from the parent distribution.
+"""
+for model in model_list:
+    hierarchical_factor.add_drawn_variable(model.centre)
+
+"""
+The factor graph is composed from the `AnalysisFactor`'s and the hierarchical factor, which was not passed in for
+the graphical model above.
+"""
+factor_graph = af.FactorGraphModel(*analysis_factor_list, hierarchical_factor)
+
+print(factor_graph.global_prior_model.info)
+
+"""
+Putting the two models side by side is the quickest way to understand what a hierarchical model is. In the shared
+graphical model above there is one `centre`: one prior object, one number, and the link into the hoisted card means
+the three datasets use literally the same value. Here there are three distinct `centre`'s, one per dataset, each
+drawn from a parent distribution whose own `mean` and `sigma` are the parameters we are fitting for, so the arrow
+means "these came from a common population", not "these are the same number".
+
+The figure states this directly: each `centre` is drawn as a `drawn` pill with the arrow from the hierarchical
+factor's card landing on the pill itself, and there is no shared badge anywhere on the figure. The footer counts the
+two hyper-parameters separately from the parameters belonging to each dataset, which is the accounting the `info`
+above cannot express.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 __Expectation Propagation__
 
 For large datasets, a graphical model may have hundreds, thousands, or *hundreds of thousands* of parameters. The
