@@ -242,9 +242,9 @@ between them and where the data enters, whereas the `info` lists the priors and 
 
 A graphical model is where the map says the most, because the three datasets collapse into a single dashed plate
 badged with the number of datasets instead of three repeated cards, the shared `centre` is hoisted into its own card
-above that plate with every member of the plate pointing back at it, and the observed data enters as its own green
-`observed` pill, which is visibly a different kind of thing from the grey pills used for fixed values. The `info`
-above can only list the same `centre` prior once per dataset and cannot show the data at all.
+above that plate with the plate linked back to it, and the observed data enters as its own green `observed` pill,
+which is visibly a different kind of thing from the white pills used for the free priors. The `info` above can only
+say the `centre` is shared by grouping it under a `0 - 2` heading, and it cannot show the data at all.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
@@ -335,10 +335,10 @@ the three datasets use literally the same value. Here there are three distinct `
 drawn from a parent distribution whose own `mean` and `sigma` are the parameters we are fitting for, so the arrow
 means "these came from a common population", not "these are the same number".
 
-The figure states this directly: each `centre` is drawn as a `drawn` pill with the arrow from the hierarchical
-factor's card landing on the pill itself, and there is no shared badge anywhere on the figure. The footer counts the
-two hyper-parameters separately from the parameters belonging to each dataset, which is the accounting the `info`
-above cannot express.
+The figure states this directly: inside the plate the `centre` is now a `drawn` pill, with the violet arrow from the
+hierarchical factor's card landing on the pill itself, and there is no shared badge anywhere on the figure. The
+footer counts the two hyper-parameters separately from the parameters belonging to each dataset, which is an
+accounting the `info` above leaves you to do yourself.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
