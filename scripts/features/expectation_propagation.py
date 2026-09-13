@@ -337,7 +337,7 @@ __Seeing The Sweep__
 failure mode this script exists to explain into something you look at rather than something you infer: a factor whose
 update is rejected every sweep, whose reported posterior is therefore the message it started with.
 
-The graph itself is the structure. Square boxes are factors, rounded pills are variables, and a line between them is
+The graph itself is the structure. Boxes are factors, pills are variables, and a line between them is
 an incidence, meaning this variable is one of that factor's arguments. Datasets fitted by identically shaped factors
 collapse into a dashed plate badged with how many of them it stands for, exactly as on the model figure above, and a
 plate never hides a member that departs from the aggregate: it names that member and draws it as a node of its own

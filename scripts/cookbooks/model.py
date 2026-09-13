@@ -243,12 +243,8 @@ The customized model can be inspected by printing its `info` attribute.
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
-
-Customization is where the map earns its place, because linking a parameter to another or adding an assertion changes 
-a model's structure and not just its numbers. The `centre` pill states the expression `centre = normalization + sigma` 
+Customization is where the model figure earns its place, because linking a parameter to another or adding an 
+assertion changes a model's structure and not just its numbers. The `centre` pill states the expression `centre = normalization + sigma` 
 that defines it and the assertions are drawn as constraints, which the `info` above does not print at all.
 """
 af.ModelPlotter(model).figure()

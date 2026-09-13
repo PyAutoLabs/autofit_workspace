@@ -183,9 +183,7 @@ model = af.Collection(group_0=group_0, group_1=group_1, group_2=group_2)
 print(model.info)
 
 """
-The model figure draws this hierarchy as containment. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The model figure draws this hierarchy as containment.
 
 Each group's `higher_level_centre` sits in the outer `MultiLevelGaussians` card whereas its `Gaussian`s sit inside 
 the `gaussian_list` frame nested within it, which is exactly the reason to use a multi-level model, drawn rather than 
