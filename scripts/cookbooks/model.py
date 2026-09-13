@@ -109,6 +109,16 @@ If we print the `info` attribute of the model we get information on all of the p
 print(model.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+This first model is the simplest map there is, a single `Gaussian` card carrying one pill per free parameter, and it 
+is the baseline every customization below is drawn against.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Priors (Model)__
 
 The model has a set of default priors, which have been loaded from a config file in the PyAutoFit workspace.
@@ -352,6 +362,12 @@ model = af.Model.from_json(file=model_file)
 print(model.info)
 
 """
+The model loaded back from the `.json` file is a single `Gaussian` again, and its map is the one the file was written 
+from, which is the quickest check that a round trip through hard disk preserved the structure and not just the values.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Model Composition (Collection)__
 
 To illustrate `Collection` objects we define a second model component, representing a `Exponential` profile.
@@ -392,6 +408,13 @@ print(f"Model Total Free Parameters = {model.total_free_parameters}")
 Printing the `info` attribute of the model gives us information on all of the parameters. 
 """
 print(model.info)
+
+"""
+A `Collection` is drawn as one card per component, so the `Gaussian` and `Exponential` sit side by side and the footer 
+counts the six free parameters they have between them. Each card is titled by the key (`gaussian`, `exponential`) used 
+to access that component on an instance, which is the naming the list-based API further below gives up.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Priors (Collection)__
@@ -486,6 +509,13 @@ model = af.Collection(gaussian=gaussian, exponential=exponential)
 print(model.info)
 
 """
+Fixing `normalization` and `centre` and adding an assertion changes the structure and not just the numbers, so the map 
+changes with it: the fixed parameters are greyed out on their cards and the assertion is drawn as a constraint on 
+the `Exponential`.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Below is an alternative API that can be used to create the same model as above.
 
 Which API is used is up to the user and which they find most intuitive.
@@ -499,6 +529,12 @@ exponential.add_assertion(exponential.rate > 5.0)
 model = af.Collection(gaussian=gaussian, exponential=exponential)
 
 print(model.info)
+
+"""
+This is the same model composed a different way, so it is the same map. The figure is a statement about the model and 
+not about the API used to build it, which makes it the quickest way to confirm two composition styles are equivalent.
+"""
+af.ModelPlotter(model).figure()
 
 """
 After creating the model as a `Collection` we can customize it afterwards:
@@ -583,9 +619,20 @@ The two models created below are identical - one uses the API detailed above whe
 model = af.Collection(gaussian_0=Gaussian, gaussian_1=Gaussian)
 print(model.info)
 
+"""
+Two `Gaussian`'s given different keys are drawn as two cards titled `gaussian_0` and `gaussian_1`, whose parameters 
+are marked `independent`, meaning one prior per card.
+"""
+af.ModelPlotter(model).figure()
+
 model_dict = {"gaussian_0": Gaussian, "gaussian_1": Gaussian}
 model = af.Collection(**model_dict)
 print(model.info)
+
+"""
+The dictionary form builds exactly the same model, so the map is unchanged; only the code that made it moved.
+"""
+af.ModelPlotter(model).figure()
 
 """
 The keys of the dictionary passed to the model (e.g. `gaussian_0` and `gaussian_1` above) are used to create the
@@ -610,6 +657,12 @@ A list of model components can also be passed to an `af.Collection` to create a 
 model = af.Collection([Gaussian, Gaussian])
 
 print(model.info)
+
+"""
+Passing a list rather than keyword arguments leaves the components unnamed, and the map says so: the cards are titled 
+by their index in the list, which is why the `instance` below can only be accessed by indexing.
+"""
+af.ModelPlotter(model).figure()
 
 """
 When a list is used, there is no string with which to name the model components (e.g. we do not input `gaussian_0`
@@ -660,6 +713,12 @@ The `info` attribute of the model gives information on all of the parameters and
 print(model.info)
 
 """
+An `af.Array` is drawn as a single card whose pills are the elements of the array, titled by their index, so 
+a `shape=(2,2)` array is four pills and the footer counts the four free parameters they make.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Prior Customization (af.Array)__
 
 The prior of every parameter in the array is set via the `prior` input above.
@@ -678,6 +737,12 @@ model[1, 0] = af.GaussianPrior(mean=0.0, sigma=2.0)
 The `info` attribute shows the customized priors.
 """
 print(model.info)
+
+"""
+Customizing the prior of individual elements does not change the shape of the array, so the map is unchanged; only 
+the legend moved.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Instances (af.Array)__
@@ -736,6 +801,13 @@ model[0, 1] = model[1, 0]
 model.add_assertion(model[1, 1] > 0.0)
 
 print(model.info)
+
+"""
+Here the customization is structural rather than numerical, and all three kinds of it appear on one card: the fixed 
+element is greyed out, the element set equal to another states that relation on its pill, and the assertion is drawn 
+as a constraint. The `info` above prints none of the three as structure.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __JSon Outputs (af.Array)__
@@ -801,6 +873,12 @@ model.gaussian.sigma = 2.0
 model.array[0, 0] = 1.0
 
 print(model.info)
+
+"""
+Combining the two gives one card per kind of component, the `Gaussian` with its named pills beside the array with its 
+indexed ones, and the fixed `sigma` and `[0, 0]` element greyed out on each.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Wrap Up__

@@ -124,6 +124,16 @@ The `info` attribute shows the model in a readable format, showing it contains o
 print(model.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+Model comparison is the clearest case for reading the map before the legend, because the three models fitted below 
+differ only in how many `Gaussian` cards they carry. This first one is a single card of three free parameters.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Create the analysis which fits the model to the data.
 """
 analysis = af.ex.Analysis(data=data, noise_map=noise_map)
@@ -204,6 +214,12 @@ model = af.Collection(gaussian_0=af.ex.Gaussian, gaussian_1=af.ex.Gaussian)
 The `info` attribute shows the model now consists of two `Gaussian`'s.
 """
 print(model.info)
+
+"""
+The second model is the same card drawn twice, `gaussian_0` and `gaussian_1`, and the footer counts six free 
+parameters instead of three. That increase in complexity is what the Bayesian evidence computed below has to pay for.
+"""
+af.ModelPlotter(model).figure()
 
 """
 We repeat the steps above to create the non-linear search and perform the model-fit.
@@ -287,6 +303,12 @@ model = af.Collection(
 The `info` attribute shows the model consists of three `Gaussian`'s.
 """
 print(model.info)
+
+"""
+The third model adds a third card and three more free parameters. Putting the three figures side by side states 
+exactly what is being compared: the same component, repeated one more time each fit.
+"""
+af.ModelPlotter(model).figure()
 
 """
 We repeat the steps above to create the non-linear search and perform the model-fit.

@@ -222,6 +222,16 @@ appear in a notebook).]
 print(model.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+This model is the simplest map there is, one `Gaussian` card carrying one pill per free parameter, with the footer 
+counting the three parameters a non-linear search will fit for.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 The priors can be manually altered as follows, noting that these updated priors will be used below when we fit the
 model to data.
 """
@@ -233,6 +243,11 @@ model.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=30.0)
 Printing the `model.info` displayed these updated priors.
 """
 print(model.info)
+
+"""
+Updating priors changes values and not structure, so the map is unchanged; only the legend moved.
+"""
+af.ModelPlotter(model).figure()
 
 """
 The example above uses the most basic PyAutoFit API to compose a simple model. The API is highly extensible and
@@ -549,6 +564,14 @@ To inspect the model, we print `factor_graph.global_prior_model.info`.
 print(factor_graph.global_prior_model.info)
 
 """
+Fitting two datasets copies the model once per dataset, and the map shows the copies: one `Gaussian` card per 
+`AnalysisFactor`, with their parameters marked `independent` because each dataset has priors of its own. Tying a 
+parameter across datasets, by sharing one prior object between the copies, would appear here as a shared badge, which 
+is how you check that a global fit is really global.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 To fit multiple datasets, we pass the `FactorGraphModel` to a non-linear search.
 
 Unlike single-dataset fitting, we now pass the `factor_graph.global_prior_model` as the model and 
@@ -716,6 +739,13 @@ model.exponential.rate = af.UniformPrior(lower_limit=0.0, upper_limit=10.0)
 All of the information about the model created via the collection can be printed at once using its `info` attribute:
 """
 print(model.info)
+
+"""
+A `Collection` is drawn as one card per component, so the `Gaussian` and the `Exponential` sit side by side and the 
+footer counts the six free parameters the search will fit for. The priors customized above are values, so they are in 
+the legend and not on the map.
+"""
+af.ModelPlotter(model).figure()
 
 """
 A model instance can again be created by mapping an input `vector`, which now has 6 entries.

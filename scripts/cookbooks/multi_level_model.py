@@ -99,6 +99,17 @@ The structure of the multi-level model, including the hierarchy of Python classe
 print(model.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+A multi-level model is drawn as containment: the `higher_level_centre` sits on the outer `MultiLevelGaussians` card 
+whereas the two `Gaussian`'s sit inside the `gaussian_list` frame nested within it. That hierarchy is the reason to 
+use a multi-level model, and the `info` above can only express it as indentation.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Instances__
 
 Instances of a multi-level model can be created, where an input `vector` of parameters is mapped to create an instance 
@@ -352,6 +363,12 @@ elsewhere.
 model = af.Model.from_json(file=model_file)
 
 print(model.info)
+
+"""
+The model loaded back from the `.json` file is a single `Gaussian` again, and its map is the one the file was written 
+from, which is the quickest check that the round trip through hard disk preserved the structure.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Wrap Up__

@@ -157,6 +157,16 @@ The `info` attribute shows the model in a readable format.
 print(model_1.info)
 
 """
+We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
+**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
+are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+
+Search chaining is a sequence of models, so keep this first map in mind: one `gaussian_left` card of three free 
+parameters, fitted to the left half of the data.
+"""
+af.ModelPlotter(model_1).figure()
+
+"""
 __Search 1__
 
 Fit the data with the `left_gaussian` using a single non-linear search. 
@@ -232,6 +242,13 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
+The map now has two cards but only `gaussian_right` is free: every parameter of `gaussian_left` was passed as 
+an `instance` and is drawn greyed out as a fixed value, which is why the footer still counts three free parameters 
+and not six. Passing a result as an instance is a statement about structure, and the map is where it shows.
+"""
+af.ModelPlotter(model_2).figure()
+
+"""
 We now run our second Dynesty search to fit the right `Gaussian`.
 
 Given the simplicity of the model, we can again use a low number of live points to achieve a fast model-fit.
@@ -303,6 +320,13 @@ model_3 = af.Collection(
 The `info` attribute shows the model, including how parameters and priors were passed from `result_1` and `result_2`.
 """
 print(model_3.info)
+
+"""
+Both cards are free again, so the map is back to six free parameters and the difference from the first two searches 
+is in the legend: the priors are now the `TruncatedGaussianPrior`'s passed from `result_1` and `result_2` rather than 
+the defaults loaded from the config files.
+"""
+af.ModelPlotter(model_3).figure()
 
 """
 We now perform the search.
@@ -497,6 +521,13 @@ The `model.info` attribute shows that the parameter and prior passing has occurr
 print(model.info)
 
 """
+Prior passing is the case where the map and the legend say the most different things. The `gaussian` card is greyed 
+out because it was passed as an `instance`, whereas the `exponential` card stays free because it was passed as 
+a `model`, so the three free and three fixed parameters described above are visible at a glance.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 We can print the priors of the exponenital:
 """
 print("Exponential Model Priors \n")
@@ -531,6 +562,13 @@ model = af.Collection(gaussian=gaussian, exponential=exponential)
 The `model.info` attribute shows that the parameter and prior passing has occurred on individual components.
 """
 print(model.info)
+
+"""
+Passing individual parameters rather than whole components gives the same two cards with the greying now inside them: 
+each card mixes fixed pills with free ones, exactly as the parameters were passed above. The map has the same shape 
+as the one before it; only which pills are fixed has moved.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Take Attributes__
