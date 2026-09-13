@@ -150,6 +150,27 @@ for dataset_index, (model, data, noise_map) in enumerate(
 factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
 """
+To inspect the global model the EP fit will approximate, we print `factor_graph.global_prior_model.info`.
+"""
+print(factor_graph.global_prior_model.info)
+
+"""
+We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above
+is its **legend**: the map shows the structure, meaning which dataset gets which component and which parameters are
+shared between them, whereas the `info` lists the priors and values themselves.
+
+The shared `centre` is what makes this a graphical model rather than three independent fits, and the map says so
+directly: the three datasets collapse into one dashed plate badged with the number of datasets, `centre` is hoisted
+out of the plate into a card of its own with the plate linked back to it, and `normalization` and `sigma` stay inside
+the plate marked `independent`, meaning one prior per dataset. The `info` above can only express the sharing by
+grouping `centre` under a `0 - 2` heading.
+
+This is the model. The factor graph EP actually sweeps is a different object, with a node per factor and a node per
+prior, and it is drawn after the fit below.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 __Mean Field__
 
 EP approximates the posterior with a fully factorised ("mean field") distribution [README Eq. (2)]:
@@ -306,7 +327,37 @@ factor_graph_result = factor_graph.optimise(
     ep_history=af.EPHistory(kl_tol=0.05),
     # updater=af.SimplerUpdater(delta=0.7),  # Optional; no damping by default.
     max_steps=5,
+    visualise_interval=1,  # Refresh the EP state figure every sweep (default 100).
 )
+
+"""
+__Seeing The Sweep__
+
+`af.EPPlotter` draws the factor graph the optimiser swept with what the run did painted onto it, which turns the
+failure mode this script exists to explain into something you look at rather than something you infer: a factor whose
+update is rejected every sweep, whose reported posterior is therefore the message it started with.
+
+The graph itself is the structure. Boxes are factors, pills are variables, and a line between them is
+an incidence, meaning this variable is one of that factor's arguments. Datasets fitted by identically shaped factors
+collapse into a dashed plate badged with how many of them it stands for, exactly as on the model figure above, and a
+plate never hides a member that departs from the aggregate: it names that member and draws it as a node of its own
+beside the plate.
+
+The state is the overlay, and it is what `graph.info` cannot give you. Each factor carries how many updates it took
+over how many sweeps, how many sweeps ago it last moved (its update age), and its status: **working**, **converged**
+in green from the same KL test `EPHistory` stops the fit on, and **stale** in grey, meaning the factor completed
+sweeps and none of them updated it, which is the condition the optimiser prints as its `STALE FACTORS` warning.
+A **reverted** update is a dashed red edge, marking a `(factor, variable)` pair whose projection was confirmed
+rejected -- a stronger statement than a message that merely happens not to have moved.
+
+We pass `factor_graph_result.factor_graph`, which is the graph the optimiser actually swept and the one
+`factor_graph_result.ep_history` is keyed by. Never pass `factor_graph.graph`: that property builds a fresh graph,
+renaming every prior factor as it goes, on every access, so the history would match nothing on it. Passing
+`kind="model"` instead draws the structure alone and needs no history.
+"""
+af.EPPlotter(
+    factor_graph_result.factor_graph, ep_history=factor_graph_result.ep_history
+).figure(kind="state")
 
 """
 The result contains the converged mean field — the EP approximation to the joint posterior. Its `mean`, `variance`
@@ -357,6 +408,14 @@ The fit above wrote to `output/features/expectation_propagation`. Notable conten
    cycles. The `model.info` files show the priors (i.e. cavities) updating cycle to cycle.
 
  - `graph.results`: the current mean-field summary.
+
+ - `graph_model.png`: the factor graph drawn as structure alone, written once at the start of the run.
+
+ - `graph_state.png`: the same graph with the state overlay described above, rewritten every `visualise_interval`
+   sweeps (every sweep, for the fit above) so the file on disk always shows the sweep that just finished.
+
+Both PNGs are written only when `model_figure: true` in the workspace's `config/output.yaml`, which is `false` by
+default.
 
 __Wrap Up__
 
