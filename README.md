@@ -41,6 +41,24 @@ pitched at undergraduate level and above.
 **HowToFit** now lives in its own standalone repository at
 [PyAutoLabs/HowToFit](https://github.com/PyAutoLabs/HowToFit).
 
+Use the [Jupyter notebooks](https://github.com/PyAutoLabs/HowToFit/tree/main/notebooks) if you want to run
+the code (recommended), or read the available [Markdown lectures](https://github.com/PyAutoLabs/HowToFit/tree/main/markdown)
+directly on GitHub.
+
+For help alongside the lectures, open the [autofit_assistant](https://github.com/PyAutoLabs/autofit_assistant)
+repository in your AI coding agent, following its setup instructions, and paste:
+
+```text
+Enter HowToFit mode.
+
+I want to work through the HowToFit lectures. Show me where to find them
+and how to use Jupyter Notebook or Markdown, then help me with questions
+as I go.
+```
+
+The assistant will answer questions about concepts, equations, code and results as you study, and help with
+notebook errors. Share the lecture link and section or the cell you are working on; you choose when to move on.
+
 ## Workspace Structure
 
 The workspace includes the following main directories:
