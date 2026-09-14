@@ -29,7 +29,7 @@ more robust and informative model fitting.
 
 A full description of using hierarchical models is given below:
 
-https://github.com/PyAutoLabs/HowToFit/blob/main/notebooks/chapter_3_graphical_models/tutorial_4_hierachical_models.ipynb
+https://github.com/PyAutoLabs/HowToFit/blob/main/notebooks/chapter_advanced/tutorial_4_hierachical_models.ipynb
 
 Model Comparison
 ----------------
