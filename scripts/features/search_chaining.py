@@ -157,12 +157,15 @@ The `info` attribute shows the model in a readable format.
 print(model_1.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-Search chaining is a sequence of models, so keep this first map in mind: one `gaussian_left` card of three free 
-parameters, fitted to the left half of the data.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+Search chaining is a sequence of models, and this first one is a single `gaussian_left` with three free parameters, 
+fitted to the left half of the data.
 """
 af.ModelPlotter(model_1).figure()
 
@@ -242,9 +245,8 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The map now has two cards but only `gaussian_right` is free: every parameter of `gaussian_left` was passed as 
-an `instance` and is drawn greyed out as a fixed value, which is why the footer still counts three free parameters 
-and not six. Passing a result as an instance is a statement about structure, and the map is where it shows.
+The model now has two components but only `gaussian_right` is free: every parameter of `gaussian_left` was passed 
+as an `instance` and is therefore fixed, which is why there are three free parameters and not six.
 """
 af.ModelPlotter(model_2).figure()
 
@@ -322,9 +324,9 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_3.info)
 
 """
-Both cards are free again, so the map is back to six free parameters and the difference from the first two searches 
-is in the legend: the priors are now the `TruncatedGaussianPrior`'s passed from `result_1` and `result_2` rather than 
-the defaults loaded from the config files.
+Both components are free again, so the model is back to six free parameters, and the difference from the first two 
+searches is in the priors: they are now the `TruncatedGaussianPrior`'s passed from `result_1` and `result_2` rather 
+than the defaults loaded from the config files.
 """
 af.ModelPlotter(model_3).figure()
 
@@ -521,9 +523,8 @@ The `model.info` attribute shows that the parameter and prior passing has occurr
 print(model.info)
 
 """
-Prior passing is the case where the map and the legend say the most different things. The `gaussian` card is greyed 
-out because it was passed as an `instance`, whereas the `exponential` card stays free because it was passed as 
-a `model`, so the three free and three fixed parameters described above are visible at a glance.
+The `gaussian` is fixed because it was passed as an `instance`, whereas the `exponential` stays free because it 
+was passed as a `model`, which is the three free and three fixed parameters described above.
 """
 af.ModelPlotter(model).figure()
 
@@ -564,9 +565,8 @@ The `model.info` attribute shows that the parameter and prior passing has occurr
 print(model.info)
 
 """
-Passing individual parameters rather than whole components gives the same two cards with the greying now inside them: 
-each card mixes fixed pills with free ones, exactly as the parameters were passed above. The map has the same shape 
-as the one before it; only which pills are fixed has moved.
+Passing individual parameters rather than whole components mixes fixed and free parameters within each component, 
+exactly as the parameters were passed above.
 """
 af.ModelPlotter(model).figure()
 

@@ -236,15 +236,15 @@ To inspect the model, we print `factor_graph.global_prior_model.info`.
 print(factor_graph.global_prior_model.info)
 
 """
-We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of the model and the `info` above
-is its **legend**: the map shows the structure, meaning which dataset gets which component, which parameters are shared
-between them and where the data enters, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-A graphical model is where the map says the most, because the three datasets collapse into a single dashed plate
-badged with the number of datasets instead of three repeated cards, the shared `centre` is hoisted into its own card
-above that plate with the plate linked back to it, and the observed data enters as its own green `observed` pill,
-which is visibly a different kind of thing from the white pills used for the free priors. The `info` above can only
-say the `centre` is shared by grouping it under a `0 - 2` heading, and it cannot show the data at all.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+
+The shared `centre` is what makes this a graphical model rather than three independent fits, and the `info` above
+expresses that sharing by grouping `centre` under a `0 - 2` heading.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
@@ -330,15 +330,13 @@ print(factor_graph.global_prior_model.info)
 
 """
 Putting the two models side by side is the quickest way to understand what a hierarchical model is. In the shared
-graphical model above there is one `centre`: one prior object, one number, and the link into the hoisted card means
-the three datasets use literally the same value. Here there are three distinct `centre`'s, one per dataset, each
-drawn from a parent distribution whose own `mean` and `sigma` are the parameters we are fitting for, so the arrow
-means "these came from a common population", not "these are the same number".
+graphical model above there is one `centre`: one prior object, one number, and the three datasets use literally the
+same value. Here there are three distinct `centre`'s, one per dataset, each drawn from a parent distribution whose
+own `mean` and `sigma` are the parameters we are fitting for, so the claim is "these came from a common population",
+not "these are the same number".
 
-The figure states this directly: inside the plate the `centre` is now a `drawn` pill, with the violet arrow from the
-hierarchical factor's card landing on the pill itself, and there is no shared badge anywhere on the figure. The
-footer counts the two hyper-parameters separately from the parameters belonging to each dataset, which is an
-accounting the `info` above leaves you to do yourself.
+The two hyper-parameters are counted separately from the parameters belonging to each dataset, which is an accounting
+the `info` above leaves you to do yourself.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 

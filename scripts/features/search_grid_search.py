@@ -129,12 +129,15 @@ The `info` attribute shows the model in a readable format, showing it contains t
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The grid search below steps over one pill of this map, `gaussian_feature.centre`, whilst every other parameter on the 
-figure is fitted by a non-linear search at each cell of the grid.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+The grid search below steps over one parameter of this model, `gaussian_feature.centre`, whilst every other 
+parameter is fitted by a non-linear search at each cell of the grid.
 """
 af.ModelPlotter(model).figure()
 

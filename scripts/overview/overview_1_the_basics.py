@@ -222,12 +222,12 @@ appear in a notebook).]
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-This model is the simplest map there is, one `Gaussian` card carrying one pill per free parameter, with the footer 
-counting the three parameters a non-linear search will fit for.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -245,7 +245,7 @@ Printing the `model.info` displayed these updated priors.
 print(model.info)
 
 """
-Updating priors changes values and not structure, so the map is unchanged; only the legend moved.
+Updating priors changes the values the search may explore and not the structure of the model itself.
 """
 af.ModelPlotter(model).figure()
 
@@ -564,10 +564,9 @@ To inspect the model, we print `factor_graph.global_prior_model.info`.
 print(factor_graph.global_prior_model.info)
 
 """
-Fitting two datasets copies the model once per dataset, and the map shows the copies: one `Gaussian` card per 
-`AnalysisFactor`, with their parameters marked `independent` because each dataset has priors of its own. Tying a 
-parameter across datasets, by sharing one prior object between the copies, would appear here as a shared badge, which 
-is how you check that a global fit is really global.
+Fitting two datasets copies the model once per dataset, one `Gaussian` per `AnalysisFactor`, each with priors of 
+its own. Tying a parameter across datasets means sharing one prior object between the copies, which is what makes a 
+global fit really global.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
@@ -741,9 +740,8 @@ All of the information about the model created via the collection can be printed
 print(model.info)
 
 """
-A `Collection` is drawn as one card per component, so the `Gaussian` and the `Exponential` sit side by side and the 
-footer counts the six free parameters the search will fit for. The priors customized above are values, so they are in 
-the legend and not on the map.
+A `Collection` holds the `Gaussian` and the `Exponential` side by side, six free parameters for the search to fit. 
+The priors customized above change the values those parameters may take and not the structure of the model.
 """
 af.ModelPlotter(model).figure()
 

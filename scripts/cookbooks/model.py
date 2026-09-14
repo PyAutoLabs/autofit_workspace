@@ -109,12 +109,12 @@ If we print the `info` attribute of the model we get information on all of the p
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-This first model is the simplest map there is, a single `Gaussian` card carrying one pill per free parameter, and it 
-is the baseline every customization below is drawn against.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -243,9 +243,9 @@ The customized model can be inspected by printing its `info` attribute.
 print(model.info)
 
 """
-Customization is where the model figure earns its place, because linking a parameter to another or adding an 
-assertion changes a model's structure and not just its numbers. The `centre` pill states the expression `centre = normalization + sigma` 
-that defines it and the assertions are drawn as constraints, which the `info` above does not print at all.
+Linking a parameter to another or adding an assertion changes a model's structure and not just its numbers. Here 
+`centre` is defined by the expression `centre = normalization + sigma`, and the model also carries assertions, none 
+of which the `info` above prints.
 """
 af.ModelPlotter(model).figure()
 
@@ -305,8 +305,8 @@ print("\nInfo:")
 print(model.info)
 
 """
-The model figure tags `centre` as `2D`, which is why counting the pills on the map does not reproduce the four free 
-parameters its footer counts.
+`centre` is a tuple, so although it is a single input argument of the class it contributes two free parameters, 
+which is why this model has four of them.
 """
 af.ModelPlotter(model).figure()
 
@@ -406,9 +406,9 @@ Printing the `info` attribute of the model gives us information on all of the pa
 print(model.info)
 
 """
-A `Collection` is drawn as one card per component, so the `Gaussian` and `Exponential` sit side by side and the footer 
-counts the six free parameters they have between them. Each card is titled by the key (`gaussian`, `exponential`) used 
-to access that component on an instance, which is the naming the list-based API further below gives up.
+A `Collection` holds the `Gaussian` and `Exponential` side by side, six free parameters between them. Each 
+component is named by the key (`gaussian`, `exponential`) used to access it on an instance, which is the naming the 
+list-based API further below gives up.
 """
 af.ModelPlotter(model).figure()
 
@@ -505,9 +505,8 @@ model = af.Collection(gaussian=gaussian, exponential=exponential)
 print(model.info)
 
 """
-Fixing `normalization` and `centre` and adding an assertion changes the structure and not just the numbers, so the map 
-changes with it: the fixed parameters are greyed out on their cards and the assertion is drawn as a constraint on 
-the `Exponential`.
+Fixing `normalization` and `centre` and adding an assertion changes the structure of the model and not just its 
+numbers: the two fixed parameters are no longer free, and the assertion constrains the `Exponential`.
 """
 af.ModelPlotter(model).figure()
 
@@ -545,10 +544,6 @@ model.exponential.add_assertion(exponential.rate > 5.0)
 
 print(model.info)
 
-"""
-A `Collection` is drawn on the model figure as one card per component, with the fixed values greyed out and any 
-assertion attached to the component it constrains.
-"""
 af.ModelPlotter(model).figure()
 
 """
@@ -601,9 +596,8 @@ model = af.Collection(
 print(model.info)
 
 """
-Repeated components collapse on the model figure into a single dashed frame badged with how many components it stands 
-for, so this five component model is drawn as two frames whose parameters are marked `independent` (one prior per 
-member) rather than as five near identical cards.
+The five components of this model are repeats of the same classes, and each repeat carries priors of its own 
+rather than sharing one prior between the members.
 """
 af.ModelPlotter(model).figure()
 
@@ -626,7 +620,7 @@ model = af.Collection(**model_dict)
 print(model.info)
 
 """
-The dictionary form builds exactly the same model, so the map is unchanged; only the code that made it moved.
+The dictionary form builds exactly the same model; only the code that made it moved.
 """
 af.ModelPlotter(model).figure()
 
@@ -655,8 +649,8 @@ model = af.Collection([Gaussian, Gaussian])
 print(model.info)
 
 """
-Passing a list rather than keyword arguments leaves the components unnamed, and the map says so: the cards are titled 
-by their index in the list, which is why the `instance` below can only be accessed by indexing.
+Passing a list rather than keyword arguments leaves the components unnamed, identified only by their index in the 
+list, which is why the `instance` below can only be accessed by indexing.
 """
 af.ModelPlotter(model).figure()
 
@@ -709,8 +703,8 @@ The `info` attribute of the model gives information on all of the parameters and
 print(model.info)
 
 """
-An `af.Array` is drawn as a single card whose pills are the elements of the array, titled by their index, so 
-a `shape=(2,2)` array is four pills and the footer counts the four free parameters they make.
+The elements of an `af.Array` are its parameters, named by their index, so a `shape=(2,2)` array has four free 
+parameters.
 """
 af.ModelPlotter(model).figure()
 
@@ -735,8 +729,8 @@ The `info` attribute shows the customized priors.
 print(model.info)
 
 """
-Customizing the prior of individual elements does not change the shape of the array, so the map is unchanged; only 
-the legend moved.
+Customizing the prior of individual elements changes their priors but not the shape of the array, so the model 
+itself is unchanged.
 """
 af.ModelPlotter(model).figure()
 
@@ -799,9 +793,8 @@ model.add_assertion(model[1, 1] > 0.0)
 print(model.info)
 
 """
-Here the customization is structural rather than numerical, and all three kinds of it appear on one card: the fixed 
-element is greyed out, the element set equal to another states that relation on its pill, and the assertion is drawn 
-as a constraint. The `info` above prints none of the three as structure.
+Here the customization is structural rather than numerical: one element is fixed, another is set equal to a second 
+element, and an assertion constrains the array. The `info` above prints none of the three as structure.
 """
 af.ModelPlotter(model).figure()
 
@@ -871,8 +864,8 @@ model.array[0, 0] = 1.0
 print(model.info)
 
 """
-Combining the two gives one card per kind of component, the `Gaussian` with its named pills beside the array with its 
-indexed ones, and the fixed `sigma` and `[0, 0]` element greyed out on each.
+Combining the two gives a `Gaussian` with named parameters beside an array with indexed ones, with `sigma` and the 
+`[0, 0]` element fixed.
 """
 af.ModelPlotter(model).figure()
 
