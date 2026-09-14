@@ -439,7 +439,7 @@
       "Sensitivity Mapping"
     ],
     "cross_refs": [
-      "//github.com/PyAutoLabs/HowToFit/blob/main/notebooks/chapter_3_graphical_models/tutorial_4_hierachical_models.ipynb",
+      "//github.com/PyAutoLabs/HowToFit/blob/main/notebooks/chapter_advanced/tutorial_4_hierachical_models.ipynb",
       "//github.com/PyAutoLabs/autofit_workspace/blob/main/notebooks/features/graphical_models.ipynb",
       "//github.com/PyAutoLabs/autofit_workspace/blob/main/notebooks/features/interpolate.ipynb",
       "//github.com/PyAutoLabs/autofit_workspace/blob/main/notebooks/features/model_comparison.ipynb",

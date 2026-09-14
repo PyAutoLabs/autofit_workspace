@@ -21,7 +21,7 @@ this example we will discuss other options available in **PyAutoFit** for compos
 
 The **HowToFit** tutorials contain a chapter dedicated to composing and fitting graphical models, available
 in the standalone repository at
-https://github.com/PyAutoLabs/HowToFit/tree/main/scripts/chapter_3_graphical_models.
+https://github.com/PyAutoLabs/HowToFit/tree/main/scripts/chapter_advanced.
 
 __Contents__
 
