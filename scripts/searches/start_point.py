@@ -125,12 +125,12 @@ We can inspect the model (with customized priors) via its `.info` attribute.
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The customized priors are values rather than structure, so they appear in the legend above and not on the map, which 
-is one `Gaussian` card of three free pills.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -158,9 +158,8 @@ the priors or model info.
 print(model.info)
 
 """
-A start point is a property of the search's initializer and not of the model, so neither the map nor the legend 
-changed: this is the same figure drawn above, which is the quickest confirmation that setting start points has not 
-quietly altered the priors.
+A start point is a property of the search's initializer and not of the model, so neither the model nor its priors 
+changed: this is the same model composed above, and setting start points has not quietly altered it.
 """
 af.ModelPlotter(model).figure()
 

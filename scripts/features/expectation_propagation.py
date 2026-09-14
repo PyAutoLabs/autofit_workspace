@@ -155,15 +155,15 @@ To inspect the global model the EP fit will approximate, we print `factor_graph.
 print(factor_graph.global_prior_model.info)
 
 """
-We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above
-is its **legend**: the map shows the structure, meaning which dataset gets which component and which parameters are
-shared between them, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The shared `centre` is what makes this a graphical model rather than three independent fits, and the map says so
-directly: the three datasets collapse into one dashed plate badged with the number of datasets, `centre` is hoisted
-out of the plate into a card of its own with the plate linked back to it, and `normalization` and `sigma` stay inside
-the plate marked `independent`, meaning one prior per dataset. The `info` above can only express the sharing by
-grouping `centre` under a `0 - 2` heading.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+
+The shared `centre` is what makes this a graphical model rather than three independent fits, and the `info` above
+expresses that sharing by grouping `centre` under a `0 - 2` heading.
 
 This is the model. The factor graph EP actually sweeps is a different object, with a node per factor and a node per
 prior, and it is drawn after the fit below.
@@ -339,9 +339,8 @@ update is rejected every sweep, whose reported posterior is therefore the messag
 
 The graph itself is the structure. Boxes are factors, pills are variables, and a line between them is
 an incidence, meaning this variable is one of that factor's arguments. Datasets fitted by identically shaped factors
-collapse into a dashed plate badged with how many of them it stands for, exactly as on the model figure above, and a
-plate never hides a member that departs from the aggregate: it names that member and draws it as a node of its own
-beside the plate.
+collapse into a dashed plate badged with how many of them it stands for, and a plate never hides a member that
+departs from the aggregate: it names that member and draws it as a node of its own beside the plate.
 
 The state is the overlay, and it is what `graph.info` cannot give you. Each factor carries how many updates it took
 over how many sweeps, how many sweeps ago it last moved (its update age), and its status: **working**, **converged**

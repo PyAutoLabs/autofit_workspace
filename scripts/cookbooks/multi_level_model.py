@@ -99,13 +99,16 @@ The structure of the multi-level model, including the hierarchy of Python classe
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-A multi-level model is drawn as containment: the `higher_level_centre` sits on the outer `MultiLevelGaussians` card 
-whereas the two `Gaussian`'s sit inside the `gaussian_list` frame nested within it. That hierarchy is the reason to 
-use a multi-level model, and the `info` above can only express it as indentation.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+The `higher_level_centre` belongs to the outer `MultiLevelGaussians` object whereas the two `Gaussian`'s are 
+contained within its `gaussian_list`. That hierarchy is the reason to use a multi-level model, and the `info` above 
+can only express it as indentation.
 """
 af.ModelPlotter(model).figure()
 
@@ -183,12 +186,9 @@ model = af.Collection(group_0=group_0, group_1=group_1, group_2=group_2)
 print(model.info)
 
 """
-The model figure draws this hierarchy as containment.
-
-Each group's `higher_level_centre` sits in the outer `MultiLevelGaussians` card whereas its `Gaussian`s sit inside 
-the `gaussian_list` frame nested within it, which is exactly the reason to use a multi-level model, drawn rather than 
-indented. The repeated groups and their repeated `Gaussian`s each collapse into a dashed frame badged with how many 
-components it stands for.
+Each group's `higher_level_centre` belongs to the outer `MultiLevelGaussians` object whereas its `Gaussian`'s are 
+contained within its `gaussian_list`, which is exactly the reason to use a multi-level model. The groups and their 
+`Gaussian`'s are repeats of the same classes, each repeat carrying priors of its own.
 """
 af.ModelPlotter(model).figure()
 
@@ -272,8 +272,8 @@ The `info` shows how the customization of the model has been performed:
 print(group_level.info)
 
 """
-On the model figure the fixed `higher_level_centre` is greyed out and the linked `normalization` carries a blue shared 
-badge, whereas `centre` and `sigma` stay marked `independent`, meaning one prior per member.
+The `higher_level_centre` is now fixed and the `normalization` is shared between the members, whereas `centre` and 
+`sigma` keep one prior per member.
 """
 af.ModelPlotter(group_level).figure()
 

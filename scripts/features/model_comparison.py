@@ -124,12 +124,15 @@ The `info` attribute shows the model in a readable format, showing it contains o
 print(model.info)
 
 """
-We can also draw the model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is its 
-**legend**: the map shows the structure, meaning which component owns which parameter and which of those parameters 
-are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-Model comparison is the clearest case for reading the map before the legend, because the three models fitted below 
-differ only in how many `Gaussian` cards they carry. This first one is a single card of three free parameters.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+The three models fitted below differ only in how many `Gaussian`'s they contain, and this first one is a single 
+`Gaussian` with three free parameters.
 """
 af.ModelPlotter(model).figure()
 
@@ -216,8 +219,8 @@ The `info` attribute shows the model now consists of two `Gaussian`'s.
 print(model.info)
 
 """
-The second model is the same card drawn twice, `gaussian_0` and `gaussian_1`, and the footer counts six free 
-parameters instead of three. That increase in complexity is what the Bayesian evidence computed below has to pay for.
+The second model is the same component twice over, `gaussian_0` and `gaussian_1`, giving six free parameters 
+instead of three. That increase in complexity is what the Bayesian evidence computed below has to pay for.
 """
 af.ModelPlotter(model).figure()
 

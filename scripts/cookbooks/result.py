@@ -406,15 +406,15 @@ for model in model_gen:
     print(model.info)
 
 """
-We can also draw a loaded model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above is 
-its **legend**: the map shows the structure, meaning which component owns which parameter and which of those 
-parameters are fixed, shared, related to one another or constrained, whereas the `info` lists the priors and values 
-themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The three datasets were fitted with the same model, so the three loaded models share one structure and one figure 
-stands for all of them. It is therefore drawn once here, for the last model the generator returned, rather than 
-inside the loop above. That its map is the `gaussian` card composed at the top of this script is the check that the 
-model came back off hard disk intact.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+That the loaded model matches the `gaussian` model composed at the top of this script is the check that the model 
+came back off hard disk intact.
 """
 af.ModelPlotter(model).figure()
 
