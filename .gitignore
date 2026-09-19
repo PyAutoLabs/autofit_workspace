@@ -20,4 +20,6 @@ scripts/path/
 scripts/scripts/
 output_path/
 *.log
-.codex/
+# Keep local Codex state private; commit generated skill adapters.
+.codex/*
+!.codex/skills/
