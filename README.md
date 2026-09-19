@@ -91,15 +91,16 @@ The oldest release the scripts here are compatible with is recorded as
 runs. That floor is the authoritative compatibility signal; this README no longer names an
 exact version, which could go stale (or name a yanked release) between releases.
 
-## Support
+## Community & Support
 
-Support for installation issues and integrating your modeling software with **PyAutoFit** is available by
-[raising an issue on the autofit_workspace GitHub page](https://github.com/PyAutoLabs/autofit_workspace/issues). or
-joining the **PyAutoFit** [Slack channel](https://pyautofit.slack.com/), where we also provide the latest updates on
-**PyAutoFit**.
+Questions, help with your code or your analysis, and ideas: the
+[PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions).
+Bug reports with a reproducer (a snippet, the traceback, your versions):
+an issue on the library's tracker. The Slack is for collaborators, by
+invitation.
 
-Slack is invitation-only, so if you'd like to join send an [email](https://github.com/Jammy2211) requesting an
-invite.
+Collaborators receive the latest **PyAutoFit** updates in the [Slack channel](https://pyautofit.slack.com/).
+Contact [James Nightingale](https://github.com/Jammy2211) about collaborator access.
 
 ## Build Configuration
 
