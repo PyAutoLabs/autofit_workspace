@@ -11,8 +11,6 @@ hpc:
   hpc_mode: false                   # If True, use HPC mode, which disables GUI visualization, logging to screen and other settings which are not suited to running on a super computer.
   iterations_per_quick_update: 10000 #  Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
   iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
-  quick_update_background: false    # Keep off on HPC: background rendering pulls matplotlib into the sampler process even when no display is attached.
-  live_visual_update: false         # Keep off on HPC: nodes are headless with no GUI and no notebook kernel, so the live display surface has nothing to attach to.
 inversion:
   check_reconstruction: true        # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
   reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.  
@@ -33,10 +31,8 @@ profiling:
   parallel_profile: false           # If True, the parallelization of the fit is profiled outputting a cPython graph.
   repeats: 1                        # The number of repeat function calls used to measure run-times when profiling.
 test:
-  check_preloads: false
   exception_override: false
   lh_timeout_seconds:               # If a float is input, the log_likelihood_function call is timed out after this many seconds, to diagnose infinite loops. Default is None, meaning no timeout.
-  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit.
   parallel_profile: false
 version:
   # The compatibility FLOOR: the oldest library release whose API this
