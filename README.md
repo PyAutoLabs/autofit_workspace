@@ -91,7 +91,7 @@ The oldest release the scripts here are compatible with is recorded as
 runs. That floor is the authoritative compatibility signal; this README no longer names an
 exact version, which could go stale (or name a yanked release) between releases.
 
-## Community & Support
+## Community & Contributing
 
 Questions, help with your code or your analysis, and ideas: the
 [PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions).
@@ -99,8 +99,9 @@ Bug reports with a reproducer (a snippet, the traceback, your versions):
 an issue on the library's tracker. The Slack is for collaborators, by
 invitation.
 
-Collaborators receive the latest **PyAutoFit** updates in the [Slack channel](https://pyautofit.slack.com/).
-Contact [James Nightingale](https://github.com/Jammy2211) about collaborator access.
+Community-built tools, tutorials and how to contribute are on the [**PyAutoFit** community page](https://pyautofit.readthedocs.io/en/latest/general/community.html).
+
+Contribution guidelines: [CONTRIBUTING.md](https://github.com/PyAutoLabs/autofit_workspace/blob/main/CONTRIBUTING.md).
 
 ## Build Configuration
 
