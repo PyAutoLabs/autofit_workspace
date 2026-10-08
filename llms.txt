@@ -24,10 +24,10 @@ If your AI can't browse GitHub, paste this entire file into the chat as context.
 
 - **Compose a model (priors, Model, Collection)** → [scripts/cookbooks/model.py](scripts/cookbooks/model.py): The model composition API — `af.Model()`, `af.Collection()`, setting and customising priors.
 - **Write a custom Analysis / log likelihood** → [scripts/cookbooks/analysis.py](scripts/cookbooks/analysis.py): Define an `Analysis` class — its `log_likelihood_function` and visualization hooks — to fit a model to your data.
-- **Choose / configure a non-linear search** → [scripts/cookbooks/search.py](scripts/cookbooks/search.py): Lists every available search and how to customise its settings.
-  - Nested sampling (Dynesty, Nautilus, NSS) → [scripts/searches/nest.py](scripts/searches/nest.py)
-  - MCMC (Emcee, Zeus) → [scripts/searches/mcmc.py](scripts/searches/mcmc.py)
-  - Maximum likelihood (Drawer, LBFGS) → [scripts/searches/mle.py](scripts/searches/mle.py)
+- **Choose / configure a non-linear search** → [scripts/cookbooks/search.py](scripts/cookbooks/search.py): Example settings for the main searches and how to customise them; the full list is in the API reference.
+  - Nested sampling (Dynesty, Nautilus) → [scripts/searches/nest.py](scripts/searches/nest.py)
+  - MCMC (Emcee, Zeus, BlackJAXNUTS) → [scripts/searches/mcmc.py](scripts/searches/mcmc.py)
+  - Maximum likelihood (Drawer, LBFGS, MultiStartAdam) → [scripts/searches/mle.py](scripts/searches/mle.py)
   - Set a search start-point → [scripts/searches/start_point.py](scripts/searches/start_point.py)
 - **Fit a dataset end-to-end** → [scripts/overview/overview_1_the_basics.py](scripts/overview/overview_1_the_basics.py): The full model → analysis → search → result loop in one script.
 - **Load & inspect results from `output/`** → [scripts/cookbooks/result.py](scripts/cookbooks/result.py): Use the `Result` returned by a search — max-likelihood instance, model, info.

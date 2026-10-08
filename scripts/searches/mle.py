@@ -81,8 +81,10 @@ __Model + Analysis__
 
 We create the model and analysis, which in this example is a single `Gaussian` and therefore has dimensionality N=3.
 
-This model and analysis are shared by every MLE search below. `use_jax=False` is required by `LBFGS` and is
-harmless for `Drawer`.
+This model and analysis are shared by the `Drawer` and `LBFGS` searches below. Both run with either backend: under
+JAX, `LBFGS` evaluates a jitted likelihood, but its gradients are still estimated by finite differences. We use
+`use_jax=False` here because, for a model this small, it is faster. The `MultiStartAdam` search further down uses
+JAX gradients and requires an analysis with `use_jax=True`.
 """
 model = af.Model(af.ex.Gaussian)
 
