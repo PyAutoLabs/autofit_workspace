@@ -226,6 +226,7 @@
       "Zeus (MCMC): The Zeus ensemble sampler MCMC.",
       "DynestyDynamic (Nested Sampling): The Dynesty dynamic nested sampler.",
       "DynestyStatic (Nested Sampling): The Dynesty static nested sampler.",
+      "Nautilus (Nested Sampling): The Nautilus importance nested sampler.",
       "LBFGS: The L-BFGS scipy optimization."
     ],
     "cross_refs": [
