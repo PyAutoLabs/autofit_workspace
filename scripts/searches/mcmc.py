@@ -105,7 +105,7 @@ search = af.Emcee(
     nwalkers=30,
     nsteps=1000,
     initializer=af.InitializerBall(lower_limit=0.49, upper_limit=0.51),
-    auto_correlations_settings=af.AutoCorrelationsSettings(
+    auto_correlation_settings=af.AutoCorrelationsSettings(
         check_for_convergence=True,
         check_size=100,
         required_length=50,
@@ -185,7 +185,7 @@ search = af.Zeus(
     nwalkers=30,
     nsteps=1001,
     initializer=af.InitializerBall(lower_limit=0.49, upper_limit=0.51),
-    auto_correlations_settings=af.AutoCorrelationsSettings(
+    auto_correlation_settings=af.AutoCorrelationsSettings(
         check_for_convergence=True,
         check_size=100,
         required_length=50,
