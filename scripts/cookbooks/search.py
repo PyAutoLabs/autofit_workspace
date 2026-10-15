@@ -291,7 +291,7 @@ search = af.Emcee(
     nwalkers=30,
     nsteps=1000,
     initializer=af.InitializerBall(lower_limit=0.49, upper_limit=0.51),
-    auto_correlations_settings=af.AutoCorrelationsSettings(
+    auto_correlation_settings=af.AutoCorrelationsSettings(
         check_for_convergence=True,
         check_size=100,
         required_length=50,
@@ -313,7 +313,7 @@ search = af.Zeus(
     nwalkers=30,
     nsteps=1001,
     initializer=af.InitializerBall(lower_limit=0.49, upper_limit=0.51),
-    auto_correlations_settings=af.AutoCorrelationsSettings(
+    auto_correlation_settings=af.AutoCorrelationsSettings(
         check_for_convergence=True,
         check_size=100,
         required_length=50,
@@ -343,7 +343,7 @@ Information about Dynesty can be found at the following links:
  - https://dynesty.readthedocs.io/en/latest/
 """
 search = af.DynestyDynamic(
-    nlive=50,
+    nlive_init=50,
     bound="multi",
     sample="auto",
     bootstrap=None,

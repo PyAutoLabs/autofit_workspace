@@ -187,7 +187,7 @@ We manually specify all of the Dynesty settings, descriptions of which are provi
 search = af.DynestyDynamic(
     path_prefix="searches",
     name="DynestyDynamic",
-    nlive=50,
+    nlive_init=50,
     bound="multi",
     sample="auto",
     bootstrap=None,
