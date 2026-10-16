@@ -23,3 +23,6 @@ output_path/
 # Keep local Codex state private; commit generated skill adapters.
 .codex/*
 !.codex/skills/
+
+# smoke-harness reports (as in autolens/autogalaxy_workspace)
+test-results/
