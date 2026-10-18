@@ -99,7 +99,7 @@ libraries (`panelsize`, `xticksize`, `yticksize`, …) do not apply here.
 
 The `corner_anesthetic` function produces a triangle of 1D and 2D PDF's of every parameter using the library `anesthetic`.
 Its `parameter_indices` input plots a subset of the parameters (a search writes one such plot per top-level model
-component, `corner_anesthetic_<component>.png`) and `derived=True` plots a component's derived parameters where its
+component, `corner_anesthetic_<component>.png`) and `latent=True` plots a component's latent parameters where its
 class declares them (none do in this example), both switched in `config/visualize/plots_search.yaml`.
 """
 aplt.corner_anesthetic(samples=samples)
