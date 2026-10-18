@@ -275,8 +275,9 @@ label:
     parameter2: c
     rate: \lambda
 
-It also contains a `superscript` section which pairs every model-component label with a superscript, so that
-models with the same parameter names (e.g. `centre` can be distinguished).
+It also contains a `superscript` section which gives a model class a superscript for the case where a model is a
+bare `af.Model` of that class and so has no name of its own. A component given a name in a `Collection` (e.g.
+`gaussian`) is labelled with that name, so models with the same parameter names (e.g. `centre`) are distinguished.
 
 label:
   superscript:
