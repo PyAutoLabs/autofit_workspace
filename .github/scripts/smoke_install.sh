@@ -10,6 +10,9 @@ if [ "$PYTHON_VERSION" = "3.12" ]; then
   pip install ./PyAutoNerves "./PyAutoFit[optional]"
 else
   pip install ./PyAutoNerves ./PyAutoFit
+  # searches/mcmc.py constructs af.Zeus, which the Hands smoke dependency
+  # preflight requires to be importable; same pin as PyAutoFit `[optional]`.
+  pip install zeus-mcmc==2.5.4
 fi
 pip install nautilus-sampler
 # NSS sampler — searches/nest.py exercises `af.NSS`, which needs the
