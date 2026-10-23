@@ -46,7 +46,7 @@ the code (recommended), or read the available [Markdown lectures](https://github
 directly on GitHub.
 
 For help alongside the lectures, open the [autofit_assistant](https://github.com/PyAutoLabs/autofit_assistant)
-repository in your AI coding agent, following its setup instructions, and paste:
+repository in your AI coding agent ([which agent?](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md)), following its setup instructions, and paste:
 
 ```text
 Enter HowToFit mode.
