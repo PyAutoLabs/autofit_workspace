@@ -25,6 +25,8 @@ output:
   remove_files: false               # If True, all output files of a non-linear search (e.g. samples, visualization, etc.) are deleted once the model-fit has completed, such that only the .zip file remains.
   samples_to_csv: true              # If True, non-linear search samples are written to a .csv file.
   unconverged_sample_size : 100     # If outputting results of an unconverged search, the number of samples used to estimate the median PDF values and errors.
+  search_internal : false    # If True, the search internal folder which contains a saved state of the non-linear search is delete, saving on hard-disk space.
+  visualize_ep_factor_searches: false  # Expectation propagation only. If True, every EP factor search draws its own per-search visuals (e.g. corner plots, model-fit images) and redraws its before-fit visuals. If False, only the first search of each factor draws before-fit visuals and no factor search draws per-search visuals (samples and summaries are still written; the EP optimiser's own graph.png / ep_history output is unaffected).
 parallel:
   warn_environment_variables: true  # If True, a warning is displayed when the search's number of CPU > 1 and enviromment variables related to threading are also > 1.
 profiling:
@@ -34,6 +36,8 @@ test:
   exception_override: false
   lh_timeout_seconds:               # If a float is input, the log_likelihood_function call is timed out after this many seconds, to diagnose infinite loops. Default is None, meaning no timeout.
   parallel_profile: false
+  check_likelihood_function: true   # if True, when a search is resumed the likelihood of a previous sample is recalculated to ensure it is consistent with the previous run.
+  log_likelihood_ceiling:           # If a float is input, log likelihoods whose magnitude exceeds it are treated as numerical garbage and replaced by the resample figure of merit. Blank (null) or inf disables the guard, which is the default: a log likelihood scales with the noise-map units, so a fixed magnitude can reject a legitimate fit on a badly-scaled dataset. Opt in where the units are known (e.g. autolens_profiling sets 1.0e+20).
 version:
   # The compatibility FLOOR: the oldest library release whose API this
   # workspace's scripts require. Preferred over workspace_version
