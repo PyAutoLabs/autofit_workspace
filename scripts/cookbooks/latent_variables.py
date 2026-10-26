@@ -140,10 +140,12 @@ sampled in one parameterisation but read in another (PyAutoGalaxy's shear is fit
 as a magnitude and an angle). The class declares the conversion as a `latent_parameters` class attribute, keyed by
 the names of the sampled parameters it replaces and valued by a function of every parameter of the component (the
 sampled ones as arrays over the samples, the fixed ones as floats) returning the latent values by name; an angle is
-returned as `af.Periodic(angle, period)` so its samples are recentred on their circular mean rather than split at
-the branch cut. These latent parameters are added to `latent.csv`, `latent.results` and `latent_summary.json`
-alongside the `Latent` class's variables (they are cheap, needing no model instance, so they are vectorised over the
-samples), and the search writes a corner plot of them, `corner_anesthetic_latent.png`, when `corner_anesthetic_latent`
+returned as `af.Periodic(angle, period)` so a corner plot can recentre it on its circular mean rather than split
+it at the branch cut. Saved latent values retain the conversion's original range. When `latent_model_parameters`
+is enabled, these columns join the `Latent` class's variables under the output policy below: full-sample output
+uses `files/latent/samples.csv`, with summaries in `latent.results` and `files/latent/latent_summary.json`.
+The conversions are vectorised over samples without constructing model instances. The search also writes
+`corner_anesthetic_latent.png` when `corner_anesthetic_latent`
 is on in `config/visualize/plots_search.yaml`. That plot follows the latent rule below rather than the fit's update
 cadence: it is made once the fit completes, and during the fit only if `latent_during_fit` is on.
 
