@@ -107,3 +107,4 @@ model_graph: false # `model.graph`: graphical-model factor graph summary. Only m
 # `model.png`: the model figure drawn beside `model.info` (af.ModelPlotter). Opt-in until the
 # model-figures epic's phase-3 acceptance renders pass. Unlike other keys an absent key means off.
 model_figure: false
+latent_model_parameters: true # Whether the latent parameters a model component declares (e.g. a shear's magnitude and angle for its gamma_1 / gamma_2) join the latent output (`latent.csv`, `latent.results`, `latent_summary.json`). An angle keeps the range its conversion gives it (the same in every fit); only the corner plots recentre it on the posterior.
