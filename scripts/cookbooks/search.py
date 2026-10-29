@@ -14,6 +14,7 @@ It first covers standard options available for all non-linear searches:
  - Unique Identifier: Ensure results are output in unique folders, so they do not overwrite each other.
  - Iterations Per Update: Control how often non-linear searches output results to hard-disk.
  - Parallelization: Use parallel processing to speed up the sampling of parameter space.
+ - Status Record: Check how a fit is doing, or why it failed, from a small file next to its output.
  - Plots: Perform non-linear search specific visualization using their in-built visualization tools.
  - Start Point: Manually specify the start point of a non-linear search, or sample a specific region of parameter space.
 
@@ -179,6 +180,58 @@ physical cores in your computer, as using more cores than exist may actually slo
 search = af.Emcee(number_of_cores=4)
 
 """
+__Status Record__
+
+When a search outputs to hard-disk, every fit also writes a small status file next to its output folder. It lets you
+see how a fit is doing, or why it stopped, without opening its results. This is most useful on a super computer,
+where you may have many fits running as batch jobs at once.
+
+For the search above, the output folder is `output/folder_0/folder_1/example_mcmc/<unique_identifier>`. Next to that
+folder (not inside it) you will find:
+
+- **`<unique_identifier>.status.json`**: the fit's current state, which attempt this is, the memory and CPU time
+  used so far and, for Nautilus, Dynesty, Emcee and the BFGS / LBFGS searches, how far through the fit is and an
+  estimate of the time left. It is rewritten every 60 seconds while the fit runs and never grows beyond 2 KB.
+- **`<unique_identifier>.status.jsonl`**: a history with one line each time the fit starts or changes state. A fit
+  that is stopped and resumed shows up as `attempt` 2.
+- **`<unique_identifier>.traceback.txt`**: the Python error, written only if the fit fails.
+
+These files sit beside the output folder, so they are kept even when `remove_files` in `output.yaml` deletes the
+folder and keeps only the `.zip`.
+
+The `state` in `.status.json` is one of:
+
+- **`running`**: the fit is running.
+- **`completed`**: the fit finished.
+- **`failed`**: the fit stopped with a Python error. The `failure_class` says what kind of error, the traceback is
+  in `.traceback.txt`, and the error is still raised as normal.
+- **`skipped`**: the fit had already finished, so the search loaded its results instead of running again.
+- **`timeout_pending`**: the fit received a stop or warning signal from the batch system (see below) and saved its
+  progress.
+
+__Batch Job Time Limits__
+
+A batch system such as Slurm stops a job when it reaches its time limit. Slurm can warn the job first with a
+`SIGUSR1` signal. For example, this line in a job script asks for the warning 5 minutes before the limit:
+
+    #SBATCH --signal=B:USR1@300
+
+With `B:` the signal goes to the job script itself, so start Python with `exec python ...` in that script so that
+the fit receives it.
+
+On `SIGUSR1` the fit saves its progress, writes `timeout_pending` and keeps running until the job is stopped. On
+`SIGTERM` (the signal Slurm sends when it stops a job) it does the same and then exits. Either way, submitting the
+same job again resumes the fit from where it left off.
+
+When a job runs under Slurm, `.status.json` also records the job's details (e.g. its ID and the number of CPUs).
+
+__Turning It Off__
+
+The status record is on by default. It is controlled by the `hpc` section of `config/general.yaml`:
+
+- `status: false` turns it off: no status files are written and no signal handling is added.
+- `status_interval_s` sets how many seconds pass between updates of `.status.json` while a fit runs (default 60).
+
 __Plots__
 
 Every non-linear search supported by **PyAutoFit** has a dedicated `plotter` class that allows the results of the
