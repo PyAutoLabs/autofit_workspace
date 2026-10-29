@@ -220,6 +220,7 @@
       "Unique Identifier: Ensure results are output in unique folders, so they do not overwrite each other.",
       "Iterations Per Update: Control how often non-linear searches output results to hard-disk.",
       "Parallelization: Use parallel processing to speed up the sampling of parameter space.",
+      "Status Record: Check how a fit is doing, or why it failed, from a small file next to its output.",
       "Plots: Perform non-linear search specific visualization using their in-built visualization tools.",
       "Start Point: Manually specify the start point of a non-linear search, or sample a specific region of parameter space.",
       "Emcee (MCMC): The Emcee ensemble sampler MCMC.",
