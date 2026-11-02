@@ -6,6 +6,7 @@ The `features` folder contains example scripts for using advanced **PyAutoFit** 
 - `shared_analysis_state.py`: Share per-evaluation model state across the factors of a graphical model so identical work is computed once, not once per factor.
 - `interpolate.py`: Fit datasets which smoothly vary as a function of a continuous parameter (e.g. time) and interpolate between them.
 - `model_comparison.py`: Perform Bayesian model comparison between different models to determine which the data favours.
+- `results_library.py`: Declare the results a set of fits should produce, list every one that is missing (and why), and add new products to finished results.
 - `search_chaining.py`: Chaining together multiple non-linear searches to automate the fitting of a complex model.
 - `search_grid_search.py`: Perform a massively parallel grid search of non-linear searches.
 - `sensitivity_mapping.py`: Determine how sensitive a dataset is to a model's complexity.

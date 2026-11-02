@@ -318,6 +318,21 @@
   },
   {
     "contents": [
+      "Fits",
+      "Index",
+      "Declare",
+      "Check",
+      "Enrich",
+      "Command Line"
+    ],
+    "cross_refs": [],
+    "notebook": "notebooks/features/results_library.ipynb",
+    "path": "scripts/features/results_library.py",
+    "summary": "When you fit many datasets \u2014 hundreds of objects on a cluster, say \u2014 the hard question at the end is not \"what are the results?\" but \"which results are *missing*?\". A fit that crashed, ran out of time, or completed without a product you need leaves no error behind: it is simply not there, and a catalogue built from the output quietly loses it.",
+    "title": "Feature: Results Library"
+  },
+  {
+    "contents": [
       "Example Source Code (`af.ex`)",
       "Data",
       "Analysis",
