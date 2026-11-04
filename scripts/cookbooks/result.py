@@ -308,12 +308,10 @@ for dataset_name in dataset_name_list:
         nlive=50,
     )
 
-    print(
-        """
+    print("""
         The non-linear search has begun running. 
         This Jupyter notebook cell with progress once search has completed, this could take a few minutes!
-        """
-    )
+        """)
 
     result = search.fit(model=model, analysis=analysis, info=info)
 

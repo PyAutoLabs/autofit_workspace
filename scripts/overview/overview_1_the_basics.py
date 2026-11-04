@@ -434,12 +434,10 @@ We begin the non-linear search by calling its `fit` method.
 
 This will take a minute or so to run.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
     This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 

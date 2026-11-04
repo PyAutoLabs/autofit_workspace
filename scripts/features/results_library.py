@@ -37,7 +37,9 @@ __Fits__
 We fit two of the three `gaussian_x1` datasets, each written to hard-disk with its dataset name as `unique_tag`. The
 third dataset is deliberately not fitted, so the library has a hole to find.
 """
-results_path = af.with_test_mode_segment(Path("output")) / "features" / "results_library"
+results_path = (
+    af.with_test_mode_segment(Path("output")) / "features" / "results_library"
+)
 
 model = af.Collection(gaussian=af.ex.Gaussian)
 
