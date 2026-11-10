@@ -1,115 +1,51 @@
 # PyAutoFit Workspace
 
-[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.9.1/notebooks/overview/overview_1_the_basics.ipynb)
-[![JOSS](https://joss.theoj.org/papers/10.21105/joss.02550/status.svg)](https://doi.org/10.21105/joss.02550)
-
-[Installation Guide](https://pyautofit.readthedocs.io/en/latest/installation/overview.html) |
-[readthedocs](https://pyautofit.readthedocs.io/en/latest/index.html) |
-[Introduction on Colab](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.9.1/notebooks/overview/overview_1_the_basics.ipynb) |
-[Browse Examples With Images](markdown/README.md) |
-[HowToFit](https://github.com/PyAutoLabs/HowToFit)
-
-Welcome to the **PyAutoFit** Workspace!
+Example scripts and notebooks for fitting scientific models and performing Bayesian inference with **PyAutoFit**. Start with an introductory example, then explore the tools for your own models and data.
 
 ## Getting Started
 
-You can get set up on your personal computer by following the installation guide on
-our [readthedocs](https://pyautofit.readthedocs.io/).
+### Explore It Yourself
 
-Alternatively, you can try **PyAutoFit** out in a web browser by going to the [autofit workspace
-Colab](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.9.1/notebooks/overview/overview_1_the_basics.ipynb).
+- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.9.1/notebooks/overview/overview_1_the_basics.ipynb)** — run the introductory notebook on Google Colab without installing anything.
+- **[Run it locally](https://pyautofit.readthedocs.io/en/latest/installation/overview.html)** — follow the installation guide, then open `notebooks/overview/overview_1_the_basics.ipynb`.
+- **[Browse examples with images](https://github.com/PyAutoLabs/autofit_workspace/blob/main/markdown/README.md)** — read worked examples and view their results directly on GitHub.
 
-## Where To Go?
+See [Find Your Examples](#find-your-examples) below to choose where to start.
 
-We recommend that you start with the `autofit_workspace/notebooks/overview/overview_1_the_basics.ipynb`
-notebook, which will give you a concise overview of **PyAutoFit**'s core features and API.
+### Explore with AI
 
-You can also [browse the overview examples fully executed, with their output images](markdown/README.md),
-directly on GitHub — no installation required.
+The [**PyAutoFit AI Assistant**](https://github.com/PyAutoLabs/autofit_assistant) helps you learn Bayesian inference, run examples and fit your own models through conversation. Visit its README for setup instructions and a starting prompt.
 
-Next, read through the overview example notebooks of features you are interested in, in the folder: `autofit_workspace/notebooks/overview`.
+## Find Your Examples
 
-Then, you may wish to implement your own model in **PyAutoFit**, using the `cookbooks` for help with the API. Alternative,
-you may want to checkout the `features` package for a list of advanced statistical modeling features.
+Examples are available as Python scripts in `scripts/` and Jupyter notebooks in `notebooks/`.
 
-## HowToFit
+| I want to… | Start here |
+|---|---|
+| Work through the basics of model fitting | [Overview](https://github.com/PyAutoLabs/autofit_workspace/tree/main/scripts/overview) |
+| Find recipes for using the API | [Cookbooks](https://github.com/PyAutoLabs/autofit_workspace/tree/main/scripts/cookbooks) |
+| Explore advanced modeling techniques | [Features](https://github.com/PyAutoLabs/autofit_workspace/tree/main/scripts/features) |
+| Try different sampling and optimisation methods | [Searches](https://github.com/PyAutoLabs/autofit_workspace/tree/main/scripts/searches) |
+| Visualise models and results | [Plotting](https://github.com/PyAutoLabs/autofit_workspace/tree/main/scripts/plot) |
 
-For users less familiar with Bayesian inference and scientific analysis you may wish to work through
-the **HowToFit** lectures. These teach you the basic principles of Bayesian inference, with the content
-pitched at undergraduate level and above.
+You’ll find sample data in `dataset/`; analysis results are written to `output/`.
 
-**HowToFit** now lives in its own standalone repository at
-[PyAutoLabs/HowToFit](https://github.com/PyAutoLabs/HowToFit).
+## Learn Bayesian Inference
 
-Use the [Jupyter notebooks](https://github.com/PyAutoLabs/HowToFit/tree/main/notebooks) if you want to run
-the code (recommended), or read the available [Markdown lectures](https://github.com/PyAutoLabs/HowToFit/tree/main/markdown)
-directly on GitHub.
+[**HowToFit**](https://github.com/PyAutoLabs/HowToFit) teaches Bayesian inference and model fitting through worked notebooks. Start here if you’re new to the subject or would like more explanation alongside the workspace examples.
 
-For help alongside the lectures, open the [autofit_assistant](https://github.com/PyAutoLabs/autofit_assistant)
-repository in your AI coding agent ([which agent?](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md)), following its setup instructions, and paste:
+You can also read the [Markdown lectures](https://github.com/PyAutoLabs/HowToFit/tree/main/markdown) directly on GitHub, or ask the PyAutoFit AI Assistant to guide you through them.
 
-```text
-Enter HowToFit mode.
+## Community and Contributing
 
-I want to work through the HowToFit lectures. Show me where to find them
-and how to use Jupyter Notebook or Markdown, then help me with questions
-as I go.
-```
+Ask questions, suggest improvements and share your work in [PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions), or chat with us on [Slack](https://join.slack.com/t/pyautolens/shared_invite/zt-2cufp4eyf-fXfgMxRGuvg~bMrI3uOAxg).
 
-The assistant will answer questions about concepts, equations, code and results as you study, and help with
-notebook errors. Share the lecture link and section or the cell you are working on; you choose when to move on.
+To contribute examples or explore community projects, visit the [PyAutoFit community page](https://pyautofit.readthedocs.io/en/latest/general/community.html).
 
-## Workspace Structure
+## Citations
 
-The workspace includes the following main directories:
+If you use PyAutoFit in your research, see the [citation guide](https://github.com/PyAutoLabs/PyAutoFit/blob/main/CITATIONS.md).
 
-- `notebooks`: **PyAutoFit** examples written as Jupyter notebooks.
-- `scripts`: **PyAutoFit** examples written as Python scripts.
-- `config`: Configuration files which customize **PyAutoFit**'s behaviour.
-- `dataset`: Where data is stored, including example datasets distributed with **PyAutoFit**.
-- `output`: Where the **PyAutoFit** analysis and visualization are output.
+## License
 
-The **examples** in the notebooks and scripts folders are structured as follows:
-
-- `overview`: Examples using **PyAutoFit** to compose and fit a model to data via a non-linear search.
-- `cookbooks`: Concise API reference guides for **PyAutoFit**'s core features.
-- `features`: Examples of **PyAutoFit**'s advanced modeling features.
-- `searches`: Example scripts of every non-linear search supported by **PyAutoFit**.
-- `plot`: An API reference guide for **PyAutoFits**'s plotting tools.
-
-The following **projects** are available in the project folder:
-
-- `astro`: An Astronomy project which fits images of gravitationally lensed galaxies.
-
-## Workspace Version
-
-This workspace is built and tested against the **latest PyAutoFit release** — install it with
-`pip install --upgrade autofit`.
-
-The oldest release the scripts here are compatible with is recorded as
-`version.minimum_library_version` in `config/general.yaml`, and is checked when the workspace
-runs. That floor is the authoritative compatibility signal; this README no longer names an
-exact version, which could go stale (or name a yanked release) between releases.
-
-## Community & Contributing
-
-**PyAutoFit** is built in the open by its users: everyone is welcome to ask questions,
-share what they have made with it, and contribute.
-
-Questions, ideas and bug reports: the [PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions).
-Chat with us on [Slack](https://join.slack.com/t/pyautolens/shared_invite/zt-2cufp4eyf-fXfgMxRGuvg~bMrI3uOAxg).
-
-Community-built tools and tutorials, and how to contribute: the [**PyAutoFit** community page](https://pyautofit.readthedocs.io/en/latest/general/community.html).
-
-Tutorial notebooks are generated from the `.py` scripts in each `scripts` folder — edit those (the `# %%` marker alternates code and markdown cells), not the notebooks.
-
-## Build Configuration
-
-The `config/` directory contains two files used by the automated build and test system
-(CI, smoke tests, and pre-release checks). These are not relevant to normal workspace usage.
-
-- `config/build/no_run.yaml` — scripts to skip during automated runs. Each entry is a filename stem
-  or path pattern with an inline comment explaining why it is skipped.
-- `config/build/profile_smoke.yaml` — environment variables applied to each script during automated runs.
-  Defines default values (e.g. test mode, small datasets) and per-script overrides for scripts
-  that need different settings.
+See the [PyAutoFit license](https://github.com/PyAutoLabs/PyAutoFit/blob/main/LICENSE).
