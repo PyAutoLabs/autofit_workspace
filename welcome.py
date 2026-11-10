@@ -6,19 +6,19 @@ input(
     "### AUTOFIT WORKSPACE WORKING DIRECTORY ###\n"
     "############################################\n\n"
     """
-    PyAutoFit scripts assume that the `autofit_workspace` directory is the Python working directory. 
-    This means  that, when you run an example script, you should run it from the `autofit_workspace` 
+    PyAutoFit scripts assume that the `autofit_workspace` directory is the Python working directory.
+    This means  that, when you run an example script, you should run it from the `autofit_workspace`
     as follows:
 
 
     cd path/to/autofit_workspace (if you are not already in the autofit_workspace).
-    python3 scripts/overview/simple/fit.py
+    python3 scripts/overview/overview_1_the_basics.py
 
     The reasons for this are so that PyAutoFit can:
 
     - Load configuration settings from config files in the `autofit_workspace/config` folder.
     - Load example data from the `autofit_workspace/dataset` folder.
-    - Output the results of models fits to your hard-disk to the `autofit/output` folder. 
+    - Output the results of models fits to your hard-disk to the `autofit_workspace/output` folder.
 
     Jupyter notebooks update the current working directory to the `autofit_workspace` directory via a magicmethod.
 
@@ -48,10 +48,10 @@ input(
     "###############################\n\n"
     """
     The image displayed on your screen shows noisy 1D data of a Gaussian.
-    
+
     The example of fitting noisy 1D profiles is used throughout the autofit_workspace to illustrate the PyAutoFit
     API and the different statistical techniques and methods available.
-    
+
     [Press Enter to continue]
     """
 )
@@ -69,11 +69,11 @@ input(
     Examples are provided as both Jupyter notebooks in the 'notebooks' folder and Python scripts in the 'scripts'
     folder. It is up to you how you would prefer to use PyAutoFit. With these folders, you can find the following
     packages:
-    
+
     - overview: An overview of how to quickly compose and fit a model in PyAutoFit.
-    
+
     - features: Examples of PyAutoFit's advanced modeling features such as search chaining and sensitivity mapping.
-    
+
     Once you a familiar with the PyAutoFit API you should be ready to use it to compose and fit models for your
     model-fitting problem!
     """
