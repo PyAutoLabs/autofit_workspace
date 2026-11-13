@@ -6,7 +6,7 @@ Example scripts and notebooks for fitting scientific models and performing Bayes
 
 ### Explore It Yourself
 
-- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.12.1/notebooks/overview/overview_1_the_basics.ipynb)** — run the introductory notebook on Google Colab without installing anything.
+- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autofit_workspace/blob/2026.11.13.1/notebooks/overview/overview_1_the_basics.ipynb)** — run the introductory notebook on Google Colab without installing anything.
 - **[Run it locally](https://pyautofit.readthedocs.io/en/latest/installation/overview.html)** — follow the installation guide, then open `notebooks/overview/overview_1_the_basics.ipynb`.
 - **[Browse examples with images](https://github.com/PyAutoLabs/autofit_workspace/blob/main/markdown/README.md)** — read worked examples and view their results directly on GitHub.
 
