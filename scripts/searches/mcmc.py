@@ -236,15 +236,10 @@ Hamiltonian Monte Carlo by adapting trajectory length on the fly, so the user do
 hand-tune the leapfrog step count. Because it uses gradients, the run is typically much more
 sample-efficient than the ensemble samplers above on smooth, unimodal posteriors.
 
-Two requirements distinguish it from `Emcee` / `Zeus`:
-
- 1) The analysis must be built with `use_jax=True` so the log-likelihood is JAX-traceable end to
-    end (`jax.grad` of it has to be takeable). Below we construct a separate `analysis_jax` to
-    keep the existing `analysis` (used by Emcee / Zeus) on its NumPy path.
- 2) The user's model must be registered as a JAX pytree so `model.instance_from_vector` flows
-    through `jax.jit`. `enable_pytrees()` is a one-shot process-level call; `register_model(model)`
-    walks the user's model and registers each concrete class it finds (here, `af.ex.Gaussian`).
-    This is the same mechanism the `Nautilus_jax` example uses.
+Unlike `Emcee` / `Zeus`, the analysis must be built with `use_jax=True` so the log-likelihood is
+JAX-traceable end to end (`jax.grad` of it has to be takeable). Below we construct a separate
+`analysis_jax` to keep the existing `analysis` (used by Emcee / Zeus) on its NumPy path. Nothing
+else is needed: the model is registered as a JAX pytree automatically when the fit starts.
 
 The fit itself runs in two phases:
 
@@ -279,11 +274,6 @@ if importlib.util.find_spec("blackjax") is None:
         "(install with `pip install autofit[optional]`)."
     )
     sys.exit(0)
-
-from autofit.jax.pytrees import enable_pytrees, register_model
-
-enable_pytrees()
-register_model(model)
 
 analysis_jax = af.ex.Analysis(data=data, noise_map=noise_map, use_jax=True)
 
