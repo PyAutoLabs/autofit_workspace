@@ -36,7 +36,9 @@
                         "id": 71,
                         "lower_limit": 0.0,
                         "upper_limit": 1.0
-                    }
+                    },
+                    "left_name": "other_prior",
+                    "right_name": "self"
                 }
             ],
             "arguments": {
